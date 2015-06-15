@@ -1,6 +1,7 @@
 package battle;
 
 import asteroids.Action;
+import asteroids.Constants;
 import asteroids.GameObject;
 import asteroids.Missile;
 import math.Vector2d;
@@ -8,9 +9,13 @@ import utilities.JEasyFrame;
 
 import java.awt.*;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static asteroids.Constants.*;
+
+import analytics.Datalyzer;
+import msafluid.MSAFluidSolver2D;
 
 /**
  * Created by simon lucas on 10/06/15.
@@ -22,6 +27,16 @@ import static asteroids.Constants.*;
  */
 
 public class SimpleBattle {
+    static boolean DO_FLUID = true;
+    static float FLUID_VEL_MULT = 2;
+    static float FLUID_COLOR_MULT = 0.2f;
+    static int FLUID_NX = 100;
+    static int FLUID_NY = 100;
+    static float FLUID_DT = 1.0f;
+    static float FLUID_VISC = 0.000001f;
+    static float FLUID_FADESPEED = 0.02f;
+    static int FLUID_SOLVER_ITERATIONS = 2;
+
 
     // play a time limited game with a strict missile budget for
     // each player
@@ -42,8 +57,15 @@ public class SimpleBattle {
     BattleView view;
     int currentTick;
 
+
+    Datalyzer datalyzer;
+    MSAFluidSolver2D fluid;
+    java.awt.image.BufferedImage fluid_image;
+
+
     public SimpleBattle() {
         this(true);
+        datalyzer = new Datalyzer();
     }
 
     public SimpleBattle(boolean visible) {
@@ -55,6 +77,20 @@ public class SimpleBattle {
             view = new BattleView(this);
             new JEasyFrame(view, "battle");
         }
+
+        if(DO_FLUID) {
+          //  FLUID_NY = FLUID_NX * Constants.height / Constants.width;
+            fluid = new MSAFluidSolver2D(FLUID_NX, FLUID_NY);
+            fluid.enableRGB(true);
+            fluid.setDeltaT(FLUID_DT);
+            fluid.setFadeSpeed(FLUID_FADESPEED);
+            fluid.setSolverIterations(FLUID_SOLVER_ITERATIONS);
+            fluid.setVisc(FLUID_VISC);
+            fluid.randomizeColor();
+
+            fluid_image = new BufferedImage(fluid.getWidth(), fluid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        }
+
     }
 
     public int getTicks() {
@@ -68,6 +104,8 @@ public class SimpleBattle {
         makeAsteroids(numberOfAsteroids);
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
+
+        datalyzer.begin();
 
         if (p1 instanceof KeyListener) {
             view.addKeyListener((KeyListener) p1);
@@ -92,6 +130,7 @@ public class SimpleBattle {
             view.removeKeyListener((KeyListener) p2);
         }
 
+        datalyzer.end(this, "data_test1");
         return 0;
     }
 
@@ -104,6 +143,8 @@ public class SimpleBattle {
 
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
+
+        if(DO_FLUID) fluid.reset();
     }
 
     protected NeuroShip buildShip(int x, int y, int playerID) {
@@ -121,6 +162,29 @@ public class SimpleBattle {
         Action a1 = p1.getAction(this.clone(), 0);
         Action a2 = p2.getAction(this.clone(), 1);
         update(a1, a2);
+        datalyzer.frame(this, new Action[]{a1,a2});
+    }
+
+    private void advect_fluid(GameObject o) {
+        float norm_x = (float)o.s.x / (float)Constants.width;
+        float norm_y = (float)o.s.y / (float)Constants.height;
+        float vel_x = (float)o.v.x / (float)Constants.width;
+        float vel_y = (float)o.v.y / (float)Constants.height;
+
+
+        int fluid_index = fluid.getIndexForNormalizedPosition(norm_x, norm_y);
+
+        Color drawColor;
+
+        float hue = (norm_x + norm_y); // + time
+        drawColor = Color.getHSBColor(hue, 1, 1);
+
+        fluid.rOld[fluid_index]  += drawColor.getRed() / 255.0f * FLUID_COLOR_MULT;
+        fluid.gOld[fluid_index]  += drawColor.getGreen() / 255.0f * FLUID_COLOR_MULT;
+        fluid.bOld[fluid_index]  += drawColor.getBlue() / 255.0f * FLUID_COLOR_MULT;
+
+        fluid.uOld[fluid_index] += vel_x * FLUID_VEL_MULT;
+        fluid.vOld[fluid_index] += vel_y * FLUID_VEL_MULT;
     }
 
     public void update(Action a1, Action a2) {
@@ -144,9 +208,21 @@ public class SimpleBattle {
         for (GameObject object : objects) {
             object.update();
             wrap(object);
+
             if (object.dead()) {
                 killList.add(object);
+            } else {
+
+                // advect fluid
+                if(DO_FLUID) advect_fluid(object);
             }
+        }
+
+        // solve fluid
+        if(DO_FLUID) {
+            advect_fluid(s1);
+            advect_fluid(s2);
+            fluid.update();
         }
 
         objects.removeAll(killList);
@@ -257,6 +333,23 @@ public class SimpleBattle {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(bg);
         g.fillRect(0, 0, size.width, size.height);
+
+        // draw fluid
+        if(DO_FLUID) {
+            int []fluid_image_data = new int[fluid.getNumCells()];
+            for (int i = 0; i < fluid.getNumCells(); i++) {
+                int cr = (int) Math.min(255.0, fluid.r[i] * 255.0);
+                int cg = (int) Math.min(255.0, fluid.g[i] * 255.0);
+                int cb = (int) Math.min(255.0, fluid.b[i] * 255.0);
+                int col = (cr << 16) | (cg << 8) | cb;
+                fluid_image_data[i] = col;
+               // int ix = i % fluid_image.getWidth();
+               // int iy = i / fluid_image.getHeight();
+               // fluid_image.setRGB(ix, iy, col);
+            }
+            fluid_image.setRGB(0, 0, fluid_image.getWidth(), fluid_image.getHeight(), fluid_image_data, 0, fluid_image.getWidth());
+            g.drawImage(fluid_image, 0, 0, Constants.width, Constants.height, null);
+        }
 
         for (GameObject go : objects) {
             go.draw(g);

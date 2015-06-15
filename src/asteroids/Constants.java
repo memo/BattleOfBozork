@@ -11,8 +11,8 @@ import java.util.Random;
  */
 public interface Constants {
     double saucerProb = 0.005;
-    int width = 640;
-    int height = 480;
+    int width = 1280;
+    int height = 800;
     Dimension size = new Dimension(width, height);
     int safeRadius = height/20;
     Color bg = Color.black;
