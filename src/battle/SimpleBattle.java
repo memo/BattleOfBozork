@@ -270,11 +270,8 @@ public class SimpleBattle {
         // but use a hack to only consider interesting interactions
         // e.g. asteroids do not collide with themselves
         if (actor instanceof Missile){
-            System.out.println("Battle Missile checking");
+//            System.out.println("Battle Missile checking");
             for(GameObject ob : objects){
-                if(ob instanceof Asteroid){
-                    System.out.println("We are checking");
-                }
                 if(overlap(actor, ob)){
                     actor.hit();
                     ob.hit();
