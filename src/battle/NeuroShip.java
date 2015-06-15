@@ -219,6 +219,7 @@ public class NeuroShip extends GameObject {
     public void hit() {
         // super.hit();
         // System.out.println("Ship destroyed");
+
         dead = true;
         // sounds.play(sounds.bangLarge);
     }

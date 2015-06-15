@@ -1,10 +1,12 @@
 package battle;
 
+import analytics.Datalyzer;
 import asteroids.Action;
 import asteroids.Constants;
 import asteroids.GameObject;
 import asteroids.Missile;
 import math.Vector2d;
+import msafluid.MSAFluidSolver2D;
 import utilities.JEasyFrame;
 
 import java.awt.*;
@@ -13,9 +15,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static asteroids.Constants.*;
-
-import analytics.Datalyzer;
-import msafluid.MSAFluidSolver2D;
 
 /**
  * Created by simon lucas on 10/06/15.
@@ -27,7 +26,6 @@ import msafluid.MSAFluidSolver2D;
  */
 
 public class SimpleBattle {
-    boolean DO_FLUID = true;
     static float FLUID_VEL_MULT = 2;
     static float FLUID_COLOR_MULT = 0.2f;
     static int FLUID_NX = 100;
@@ -36,15 +34,14 @@ public class SimpleBattle {
     static float FLUID_VISC = 0.000001f;
     static float FLUID_FADESPEED = 0.02f;
     static int FLUID_SOLVER_ITERATIONS = 2;
-
-
     // play a time limited game with a strict missile budget for
     // each player
     static int nMissiles = 100;
     static int nTicks = 1000;
-    static int pointsPerKill = 10;
+    static int pointsPerAsteroidKill = 10;
+    static int pointsPerEnemyKill = 10000;
     static int releaseVelocity = 5;
-
+    boolean DO_FLUID = false;
     boolean visible = true;
 
     ArrayList<BattleController> controllers;
@@ -75,8 +72,8 @@ public class SimpleBattle {
             new JEasyFrame(view, "battle");
         }
 
-        if(DO_FLUID) {
-          //  FLUID_NY = FLUID_NX * Constants.height / Constants.width;
+        if (DO_FLUID) {
+            //  FLUID_NY = FLUID_NX * Constants.height / Constants.width;
             fluid = new MSAFluidSolver2D(FLUID_NX, FLUID_NY);
             fluid.enableRGB(true);
             fluid.setDeltaT(FLUID_DT);
@@ -94,11 +91,11 @@ public class SimpleBattle {
         return currentTick;
     }
 
-    public int playGame(BattleController p1, BattleController p2 ) {
+    public int playGame(BattleController p1, BattleController p2) {
         return playGame(p1, p2, null);
     }
 
-    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer ) {
+    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer) {
         this.p1 = p1;
         this.p2 = p2;
         reset();
@@ -106,7 +103,7 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
-        if(datalyzer!=null)
+        if (datalyzer != null)
             datalyzer.begin();
 
         if (p1 instanceof KeyListener) {
@@ -132,7 +129,7 @@ public class SimpleBattle {
             view.removeKeyListener((KeyListener) p2);
         }
 
-        if(datalyzer!=null)
+        if (datalyzer != null)
             datalyzer.end(this, "data_test1");
         return 0;
     }
@@ -147,7 +144,7 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
-        if(DO_FLUID) fluid.reset();
+        if (DO_FLUID) fluid.reset();
     }
 
     protected NeuroShip buildShip(int x, int y, int playerID) {
@@ -158,13 +155,11 @@ public class SimpleBattle {
         return new NeuroShip(position, speed, direction, playerID);
     }
 
-    public void update()
-    {
+    public void update() {
         update(null);
     }
 
-    public void update( Datalyzer datalyzer)
-    {
+    public void update(Datalyzer datalyzer) {
         // get the actions from each player
 
         // apply them to each player's ship, taking actions as necessary
@@ -172,15 +167,15 @@ public class SimpleBattle {
         Action a2 = p2.getAction(this.clone(), 1);
         update(a1, a2);
 
-        if(datalyzer!=null)
-            datalyzer.frame(this, new Action[]{a1,a2});
+        if (datalyzer != null)
+            datalyzer.frame(this, new Action[]{a1, a2});
     }
 
     private void advect_fluid(GameObject o) {
-        float norm_x = (float)o.s.x / (float)Constants.width;
-        float norm_y = (float)o.s.y / (float)Constants.height;
-        float vel_x = (float)o.v.x / (float)Constants.width;
-        float vel_y = (float)o.v.y / (float)Constants.height;
+        float norm_x = (float) o.s.x / (float) Constants.width;
+        float norm_y = (float) o.s.y / (float) Constants.height;
+        float vel_x = (float) o.v.x / (float) Constants.width;
+        float vel_y = (float) o.v.y / (float) Constants.height;
 
 
         int fluid_index = fluid.getIndexForNormalizedPosition(norm_x, norm_y);
@@ -190,9 +185,9 @@ public class SimpleBattle {
         float hue = (norm_x + norm_y); // + time
         drawColor = Color.getHSBColor(hue, 1, 1);
 
-        fluid.rOld[fluid_index]  += drawColor.getRed() / 255.0f * FLUID_COLOR_MULT;
-        fluid.gOld[fluid_index]  += drawColor.getGreen() / 255.0f * FLUID_COLOR_MULT;
-        fluid.bOld[fluid_index]  += drawColor.getBlue() / 255.0f * FLUID_COLOR_MULT;
+        fluid.rOld[fluid_index] += drawColor.getRed() / 255.0f * FLUID_COLOR_MULT;
+        fluid.gOld[fluid_index] += drawColor.getGreen() / 255.0f * FLUID_COLOR_MULT;
+        fluid.bOld[fluid_index] += drawColor.getBlue() / 255.0f * FLUID_COLOR_MULT;
 
         fluid.uOld[fluid_index] += vel_x * FLUID_VEL_MULT;
         fluid.vOld[fluid_index] += vel_y * FLUID_VEL_MULT;
@@ -205,7 +200,7 @@ public class SimpleBattle {
 
         checkCollision(s1);
         checkCollision(s2);
-        for(GameObject object : objects) checkCollision(object);
+        for (GameObject object : objects) checkCollision(object);
 
         // and fire any missiles as necessary
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
@@ -224,12 +219,12 @@ public class SimpleBattle {
                 killList.add(object);
             } else {
                 // advect fluid
-                if(DO_FLUID) advect_fluid(object);
+                if (DO_FLUID) advect_fluid(object);
             }
         }
 
         // solve fluid
-        if(DO_FLUID) {
+        if (DO_FLUID) {
             advect_fluid(s1);
             advect_fluid(s2);
             fluid.update();
@@ -280,24 +275,29 @@ public class SimpleBattle {
         // check with all other game objects
         // but use a hack to only consider interesting interactions
         // e.g. asteroids do not collide with themselves
-        if (actor instanceof Missile){
+        if (actor instanceof Missile) {
 //            System.out.println("Battle Missile checking");
-            for(GameObject ob : objects){
-                if(overlap(actor, ob)){
+            for (GameObject ob : objects) {
+                if (overlap(actor, ob)) {
                     actor.hit();
                     ob.hit();
                     return;
                 }
             }
 
-        } else if(actor instanceof NeuroShip) {
+        } else if (actor instanceof NeuroShip) {
             for (GameObject ob : objects) {
                 if (overlap(actor, ob)) {
                     // the object is hit, and the actor is also
 
                     int playerID = (actor == s1 ? 1 : 0);
                     PlayerStats stats = this.stats.get(playerID);
-                    stats.nPoints += pointsPerKill;
+                    if (ob instanceof Missile) {
+                        this.stats.get(playerID == 0 ? 1 : 0).nPoints += pointsPerEnemyKill;
+                        this.stats.get(playerID).nPoints -= pointsPerEnemyKill;
+                    }else{
+                        stats.nPoints += pointsPerAsteroidKill;
+                    }
 
                     ob.hit();
                     actor.hit();
@@ -354,24 +354,24 @@ public class SimpleBattle {
         g.fillRect(0, 0, size.width, size.height);
 
         // draw fluid
-        if(DO_FLUID) {
-            int []fluid_image_data = new int[fluid.getNumCells()];
+        if (DO_FLUID) {
+            int[] fluid_image_data = new int[fluid.getNumCells()];
             for (int i = 0; i < fluid.getNumCells(); i++) {
                 int cr = (int) Math.min(255.0, fluid.r[i] * 255.0);
                 int cg = (int) Math.min(255.0, fluid.g[i] * 255.0);
                 int cb = (int) Math.min(255.0, fluid.b[i] * 255.0);
                 int col = (cr << 16) | (cg << 8) | cb;
                 fluid_image_data[i] = col;
-               // int ix = i % fluid_image.getWidth();
-               // int iy = i / fluid_image.getHeight();
-               // fluid_image.setRGB(ix, iy, col);
+                // int ix = i % fluid_image.getWidth();
+                // int iy = i / fluid_image.getHeight();
+                // fluid_image.setRGB(ix, iy, col);
             }
             fluid_image.setRGB(0, 0, fluid_image.getWidth(), fluid_image.getHeight(), fluid_image_data, 0, fluid_image.getWidth());
             g.drawImage(fluid_image, 0, 0, Constants.width, Constants.height, null);
         }
 
         for (GameObject go : objects) {
-            if(!go.dead()) go.draw(g);
+            if (!go.dead()) go.draw(g);
         }
 
         s1.draw(g);
@@ -425,7 +425,7 @@ public class SimpleBattle {
     }
 
     public boolean isGameOver() {
-        if(s1.dead() || s2.dead()) return true;
+        if (s1.dead() || s2.dead()) return true;
         if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
             //ensure that there are no bullets left in play
             if (objects.isEmpty()) {
@@ -440,10 +440,10 @@ public class SimpleBattle {
     private void makeAsteroids(int numberOfAsteroids) {
         ArrayList<GameObject> createdAsteroids = new ArrayList<>(numberOfAsteroids);
         double safeRadius = height / 20;
-        while(createdAsteroids.size() < numberOfAsteroids){
+        while (createdAsteroids.size() < numberOfAsteroids) {
             Vector2d randomPosition = Vector2d.getRandomCartesian(width, height, true);
             Vector2d randomVelocity = Vector2d.getRandomPolar(2 * Math.PI, 0.5, 1.0, true);
-            if(Math.min(randomPosition.dist(s1.s), randomPosition.dist(s2.s)) > safeRadius){
+            if (Math.min(randomPosition.dist(s1.s), randomPosition.dist(s2.s)) > safeRadius) {
                 createdAsteroids.add(new Asteroid(randomPosition, randomVelocity, 0));
             }
         }
