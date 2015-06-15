@@ -19,6 +19,14 @@ public class Util {
         return a.x*b.x + a.y*b.y;
     }
 
+    public static double heading( Vector2d v )
+    {
+        double theta = Math.atan2(v.y, v.x);
+        if (theta < 0)
+            theta += Math.PI * 2;
+        return theta;
+    }
+
     public static  Vector2d  closestPointOnSegment( Vector2d p, Vector2d a, Vector2d b )
     {
         Vector2d v = Vector2d.subtract(b, a);
