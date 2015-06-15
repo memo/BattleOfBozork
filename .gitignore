@@ -13,3 +13,4 @@ buildNumber.properties
 .idea/tasks.xml
 .idea/
 *.iml
+*.csv
