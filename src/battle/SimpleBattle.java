@@ -28,12 +28,12 @@ import msafluid.MSAFluidSolver2D;
 
 public class SimpleBattle {
     boolean DO_FLUID = true;
-    static float FLUID_VEL_MULT = 2;
-    static float FLUID_COLOR_MULT = 0.2f;
+    static float FLUID_VEL_MULT = 1;
+    static float FLUID_COLOR_MULT = 0.5f;
     static int FLUID_NX = 100;
     static int FLUID_NY = 100;
     static float FLUID_DT = 1.0f;
-    static float FLUID_VISC = 0.000001f;
+    static float FLUID_VISC = 0.00001f;
     static float FLUID_FADESPEED = 0.02f;
     static int FLUID_SOLVER_ITERATIONS = 2;
 
@@ -206,6 +206,17 @@ public class SimpleBattle {
         checkCollision(s1);
         checkCollision(s2);
         for(GameObject object : objects) checkCollision(object);
+
+        // check collision with trail
+        if(s1.collisionWithTrail(s2.s)) {
+            System.out.println("s1 HIT");
+            s2.hit();
+        }
+
+        if(s2.collisionWithTrail(s1.s)) {
+            System.out.println("s1 HIT");
+            s1.hit();
+        }
 
         // and fire any missiles as necessary
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);

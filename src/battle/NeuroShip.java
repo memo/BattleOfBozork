@@ -42,27 +42,26 @@ public class NeuroShip extends GameObject {
     int playerID;
 
 
-
     // trail parameters
     static int trail_length = 100;
     static double trail_momentum = 0.98;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
+    static int trail_collision_dist = 10;
 
     // trail vars
-    int trail_index = 0;
+    static boolean trail_enabled = true;
     static int trail_length_max = 5000;
     Vector2d[] trail_pos = new Vector2d[trail_length_max];
     Vector2d[] trail_vel = new Vector2d[trail_length_max];
+    int trail_index = 0;
 
     static public void setTrailLength(int n) {
-        if(n < 1) n = 1;
-        else if (n>= trail_length_max - 1) n = trail_length_max - 1;
+        if (n < 1) n = 1;
+        else if (n >= trail_length_max - 1) n = trail_length_max - 1;
         trail_length = n;
     }
-
-
 
 
     public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
@@ -71,7 +70,7 @@ public class NeuroShip extends GameObject {
         this.playerID = playerID;
 
         setTrailLength(trail_length);
-        for(int i=0; i<trail_length_max; i++) {
+        for (int i = 0; i < trail_length_max; i++) {
             trail_pos[i] = new Vector2d(s.x, s.y, true);
             trail_vel[i] = new Vector2d(0, 0, true);
         }
@@ -113,6 +112,7 @@ public class NeuroShip extends GameObject {
         return v;
     }
 
+
     public NeuroShip update(Action action) {
 
         // what if this is always on?
@@ -143,18 +143,7 @@ public class NeuroShip extends GameObject {
 
         s.add(v);
 
-
-        trail_index = trail_index % trail_length;
-        trail_pos[trail_index].x = s.x;
-        trail_pos[trail_index].y = s.y;
-        trail_vel[trail_index].x = v.x;
-        trail_vel[trail_index].y = v.y;
-        trail_index = (trail_index + 1) % trail_length;
-
-        for(int i=0; i<trail_length; i++) {
-            trail_vel[i].multiply(trail_momentum);
-            trail_pos[i].add(trail_vel[i]);
-        }
+        updateTrail();
 
         return this;
     }
@@ -200,20 +189,8 @@ public class NeuroShip extends GameObject {
         }
         g.setTransform(at);
 
-        int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
-        for(int i=0; i<trail_end_index; i++) {
-            int i1 = (i + trail_index) % trail_length;
-            int i2 = (i1 + 1) % trail_length;
-            Vector2d p1 = trail_pos[i1];
-            Vector2d p2 = trail_pos[i2];
-            boolean doDraw = true;
-
-            // HACK! use vars for window width height
-            if(!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) doDraw = false;
-            if(!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
-            if(doDraw) g.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
-        }
-
+        g.setColor(color);
+        drawTrail(g);
     }
 
     public void hit() {
@@ -227,5 +204,65 @@ public class NeuroShip extends GameObject {
         return dead;
     }
 
+
+    private void updateTrail() {
+        if (!trail_enabled) return;
+
+        trail_index = trail_index % trail_length;
+        trail_pos[trail_index].x = s.x;
+        trail_pos[trail_index].y = s.y;
+        trail_vel[trail_index].x = v.x;
+        trail_vel[trail_index].y = v.y;
+        trail_index = (trail_index + 1) % trail_length;
+
+        for (int i = 0; i < trail_length; i++) {
+            trail_vel[i].multiply(trail_momentum);
+            trail_pos[i].add(trail_vel[i]);
+        }
+    }
+
+    private void drawTrail(Graphics2D g) {
+        if (!trail_enabled) return;
+
+        int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
+        for (int i = 0; i < trail_end_index; i++) {
+            int i1 = (i + trail_index) % trail_length;
+            int i2 = (i1 + 1) % trail_length;
+            Vector2d p1 = trail_pos[i1];
+            Vector2d p2 = trail_pos[i2];
+            boolean doDraw = true;
+
+            if (!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) doDraw = false;
+            if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
+            if (doDraw) g.drawLine((int) p1.x, (int) p1.y, (int) p2.x, (int) p2.y);
+        }
+    }
+
+
+    public boolean collisionWithTrail(Vector2d p) {
+        if (!trail_enabled) return false;
+
+        int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
+        double dist_thresh2 = trail_collision_dist * trail_collision_dist;
+        for (int i = 0; i < trail_end_index; i++) {
+            int i1 = (i + trail_index) % trail_length;
+            int i2 = (i1 + 1) % trail_length;
+            Vector2d p1 = trail_pos[i1];
+            Vector2d p2 = trail_pos[i2];
+            boolean doDraw = true;
+
+            if (!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) doDraw = false;
+            if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
+
+            if(doDraw) {
+                Vector2d closest_point = math.Util.closestPointOnSegment(p, p1, p2);
+                double dist2 = closest_point.distSquared(p);
+                if (dist2 < dist_thresh2) return true;
+            }
+
+        }
+
+        return false;
+    }
 
 }
