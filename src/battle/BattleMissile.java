@@ -30,6 +30,15 @@ public class BattleMissile extends GameObject {
     }
 
     @Override
+    public BattleMissile copy() {
+        BattleMissile copy = new BattleMissile(s, v, id);
+        updateClone(copy);
+        copy.ttl = ttl;
+        copy.color = color;
+        return copy;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
         g.fillOval((int) (s.x-r), (int) (s.y-r), (int) r * 2, (int) r * 2);

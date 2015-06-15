@@ -84,10 +84,10 @@ public class AsteroidTwoFace extends Asteroid implements PolyContains {
             game.asteroidTwoFaceDeath(this);
         } else {
             // shoot a missile back at the ship
-            Missile m = new Missile(s, new Vector2d(0, 0));
+            Missile m = new Missile(s, new Vector2d(0, 0, true));
             double releaseVelocity = 5.0; // Math.min(releaseVelocity, maxRelease);
             m.ttl = 60;
-            Vector2d d = new Vector2d();
+            Vector2d d = new Vector2d(true);
             d.set(game.ship.s);
             d.subtract(s);
             d.normalise();

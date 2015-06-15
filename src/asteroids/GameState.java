@@ -163,13 +163,13 @@ public class GameState {
     }
 
     private void makeAsteroids(int nAsteroids) {
-        Vector2d centre = new Vector2d(width / 2, height / 2);
+        Vector2d centre = new Vector2d(width / 2, height / 2, true);
         // assumes that the game object list is currently empty
         while (list.objects.size() < nAsteroids) {
             // choose a random position and velocity
             Vector2d s = new Vector2d(rand.nextDouble() * width,
-                    rand.nextDouble() * height);
-            Vector2d v = new Vector2d(rand.nextGaussian(), rand.nextGaussian());
+                    rand.nextDouble() * height, true);
+            Vector2d v = new Vector2d(rand.nextGaussian(), rand.nextGaussian(), true);
             if (s.dist(centre) > safeRadius && v.mag() > 0.5) {
                 // Asteroid a = new Asteroid(this, s, v, 0);
 
@@ -201,17 +201,17 @@ public class GameState {
 
     public void makeShip() {
         ship = new Ship(this,
-                new Vector2d(width / 2, height / 2),
-                new Vector2d(),
-                new Vector2d(0, -1));
+                new Vector2d(width / 2, height / 2, true),
+                new Vector2d(true),
+                new Vector2d(0, -1, true));
         add(ship);
     }
 
     public void makeBotShip() {
         BotShip ship = new BotShip(this,
-                new Vector2d(width / 2, height / 2),
-                new Vector2d(),
-                new Vector2d(0, -1));
+                new Vector2d(width / 2, height / 2, true),
+                new Vector2d(true),
+                new Vector2d(0, -1, true));
         add(ship);
     }
 
@@ -231,8 +231,9 @@ public class GameState {
         if (a.index < radii.length - 1) {
             // add some new ones at this position
             for (int i=0; i<nSplits; i++) {
-                Vector2d v1 = a.v.copy().add(rand.nextGaussian(), rand.nextGaussian());
-                Asteroid a1 = new Asteroid(this, a.s.copy(), v1, a.index + 1);
+                Vector2d v1 = new Vector2d(a.v, true);
+                v1.add(rand.nextGaussian(), rand.nextGaussian());
+                Asteroid a1 = new Asteroid(this, new Vector2d(a.s, true), v1, a.index + 1);
                 list.add(a1);
             }
         }
@@ -249,8 +250,9 @@ public class GameState {
         if (a.index < radii.length - 1) {
             // add some new ones at this position
             for (int i=0; i<nSplits; i++) {
-                Vector2d v1 = a.v.copy().add(rand.nextGaussian(), rand.nextGaussian());
-                Asteroid a1 = new AsteroidTwoFace(this, a.s.copy(), v1, a.index + 1);
+                Vector2d v1 = new Vector2d(a.v, true);
+                v1.add(rand.nextGaussian(), rand.nextGaussian());
+                Asteroid a1 = new AsteroidTwoFace(this, new Vector2d(a.s, true), v1, a.index + 1);
                 list.add(a1);
             }
         }

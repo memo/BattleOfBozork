@@ -41,9 +41,9 @@ public class Ship extends GameObject {
 
 
     public Ship(GameState game, Vector2d s, Vector2d v, Vector2d d) {
-        super(new Vector2d(s), new Vector2d(v));
+        super(new Vector2d(s, true), new Vector2d(v, true));
         this.game = game;
-        this.d = new Vector2d(d);
+        this.d = new Vector2d(d, true);
     }
 
     public Ship copy() {
@@ -94,7 +94,7 @@ public class Ship extends GameObject {
         v.add(d, action.thrust * t * 0.3 / 2);
         v.y += gravity;
         // v.x = 0.5;
-        v.mul(loss);
+        v.multiply(loss);
         s.add(v);
         // now create a missile if necessary
         // if the release velocity is zero
@@ -110,7 +110,7 @@ public class Ship extends GameObject {
         // System.out.println("Trying a missile launch");
         if (releaseVelocity > maxRelease) {
             releaseVelocity = Math.max(releaseVelocity, missileMinVelocity * 2);
-            Missile m = new Missile(s, new Vector2d(0, 0));
+            Missile m = new Missile(s, new Vector2d(0, 0, true));
             releaseVelocity = Math.min(releaseVelocity, maxRelease);
             m.v.add(d, releaseVelocity);
             // make it clear the ship

@@ -29,7 +29,7 @@ public class View extends JComponent {
     public View(GameState game) {
         this.game = game;
         scale = size.width - 2 * offset;
-        ship = new Ship(null, new Vector2d(), new Vector2d(), new Vector2d());
+        ship = new Ship(null, new Vector2d(true), new Vector2d(true), new Vector2d(true));
     }
 
     public void paintComponent(Graphics gx) {

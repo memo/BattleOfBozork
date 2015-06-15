@@ -11,7 +11,7 @@ import static asteroids.Constants.*;
 public class BotShip extends Ship {
 
     public BotShip(GameState game, Vector2d s, Vector2d v, Vector2d d) {
-        super(game, new Vector2d(rand.nextDouble() * width, rand.nextDouble() * height), v, d);
+        super(game, new Vector2d(rand.nextDouble() * width, rand.nextDouble() * height, true), v, d);
         d.rotate(rand.nextDouble() * 2 * Math.PI);
         // better to have constructors that capture all of the state
         action = new Action();

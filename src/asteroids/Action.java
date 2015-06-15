@@ -13,12 +13,24 @@ public class Action {
 
     public Action() {}
 
+    /**
+     * Create a new action to be executed by the controller
+     *
+     * @param thrust 1 is full thrust, 0 is nothing
+     * @param turn 1 is clockwise, -1 is anticlockwise, 0 is don't turn
+     * @param shoot true is fire, false is don't fire
+     */
     public Action(double thrust, double turn, boolean shoot) {
         this.thrust = thrust;
         this.turn = turn;
         this.shoot = shoot;
     }
 
+    /**
+     * Create an action which is a copy of an existing action
+     *
+     * @param a the action to clone
+     */
     public Action(Action a) {
         thrust = a.thrust;
         turn = a.turn;

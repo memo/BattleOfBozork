@@ -14,6 +14,7 @@ public class Column extends GameObject implements PolyContains {
     static Stroke stroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     boolean dead;
     GameState game;
+    private int index;
 
     static double minGap = 0.2;
     static double maxGap = 0.4;
@@ -24,6 +25,7 @@ public class Column extends GameObject implements PolyContains {
 
     public Column(GameState game, int index) {
         super(new Vector2d(width + index * width/4, 0), new Vector2d(-1, 0));
+        this.index = index;
         this.game = game;
         setRandPaths();
     }
@@ -72,6 +74,13 @@ public class Column extends GameObject implements PolyContains {
         g.draw(upper);
         g.draw(lower);
         g.setTransform(at);
+    }
+
+    @Override
+    public GameObject copy() {
+        Column column = new Column(game, index);
+        updateClone(column);
+        return column;
     }
 
     public void update() {

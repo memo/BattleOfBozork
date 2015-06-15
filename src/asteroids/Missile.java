@@ -30,6 +30,14 @@ public class Missile extends GameObject {
         g.fillOval((int) (s.x-r), (int) (s.y-r), (int) r * 2, (int) r * 2);
     }
 
+    @Override
+    public GameObject copy() {
+        Missile object = new Missile(s, v);
+        object.ttl = ttl;
+
+        return object;
+    }
+
     public boolean dead() {
         return ttl <= 0;
     }

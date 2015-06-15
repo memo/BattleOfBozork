@@ -71,6 +71,13 @@ public class Asteroid extends GameObject {
         g.setTransform(at);
     }
 
+    @Override
+    public GameObject copy() {
+        Asteroid asteroid = new Asteroid(game, s, v, index);
+        updateClone(asteroid);
+        return asteroid;
+    }
+
     public void update() {
         s.add(v);
         rot += rotRate;
