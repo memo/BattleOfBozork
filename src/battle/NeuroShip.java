@@ -1,9 +1,6 @@
 package battle;
 
-import asteroids.Action;
-import asteroids.GameObject;
-import asteroids.GameState;
-import asteroids.Missile;
+import asteroids.*;
 import math.Vector2d;
 
 import java.awt.*;
@@ -212,8 +209,8 @@ public class NeuroShip extends GameObject {
             boolean doDraw = true;
 
             // HACK! use vars for window width height
-            if(!trail_wrap_x && Math.abs(p1.x - p2.x) > 1920 * 0.9) doDraw = false;
-            if(!trail_wrap_y && Math.abs(p1.y - p2.y) > 1080 * 0.9) doDraw = false;
+            if(!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) doDraw = false;
+            if(!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
             if(doDraw) g.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
         }
 
