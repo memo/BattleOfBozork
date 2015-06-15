@@ -91,6 +91,7 @@ public class Asteroid extends GameObject {
 
     public void hit() {
         dead = true;
+//        System.out.println("Asteroid Hit");
     }
 }
 
