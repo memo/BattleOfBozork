@@ -1,13 +1,14 @@
 package battle;
 
-import asteroids.*;
+import asteroids.Action;
+import asteroids.GameObject;
+import asteroids.Missile;
 import math.Vector2d;
 import utilities.JEasyFrame;
 
+import java.awt.*;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.awt.*;
-
 
 import static asteroids.Constants.*;
 
@@ -64,18 +65,18 @@ public class SimpleBattle {
         this.p1 = p1;
         this.p2 = p2;
         reset();
-
+        makeAsteroids(numberOfAsteroids);
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
         if (p1 instanceof KeyListener) {
-            view.addKeyListener((KeyListener)p1);
+            view.addKeyListener((KeyListener) p1);
             view.setFocusable(true);
             view.requestFocus();
         }
 
         if (p2 instanceof KeyListener) {
-            view.addKeyListener((KeyListener)p2);
+            view.addKeyListener((KeyListener) p2);
             view.setFocusable(true);
             view.requestFocus();
         }
@@ -85,10 +86,10 @@ public class SimpleBattle {
         }
 
         if (p1 instanceof KeyListener) {
-            view.removeKeyListener((KeyListener)p1);
+            view.removeKeyListener((KeyListener) p1);
         }
         if (p2 instanceof KeyListener) {
-            view.removeKeyListener((KeyListener)p2);
+            view.removeKeyListener((KeyListener) p2);
         }
 
         return 0;
@@ -110,7 +111,7 @@ public class SimpleBattle {
         Vector2d speed = new Vector2d(true);
         Vector2d direction = new Vector2d(1, 0, true);
 
-        return new NeuroShip(position, speed, direction, playerID );
+        return new NeuroShip(position, speed, direction, playerID);
     }
 
     public void update() {
@@ -264,13 +265,13 @@ public class SimpleBattle {
 
         s1.draw(g);
         if (p1 instanceof RenderableBattleController) {
-            RenderableBattleController rbc = (RenderableBattleController)p1;
+            RenderableBattleController rbc = (RenderableBattleController) p1;
             rbc.render(g, s1.copy());
         }
 
         s2.draw(g);
         if (p2 instanceof RenderableBattleController) {
-            RenderableBattleController rbc = (RenderableBattleController)p2;
+            RenderableBattleController rbc = (RenderableBattleController) p2;
             rbc.render(g, s2.copy());
         }
     }
@@ -286,8 +287,7 @@ public class SimpleBattle {
         }
     }
 
-    public ArrayList<GameObject> getObjects()
-    {
+    public ArrayList<GameObject> getObjects() {
         return new ArrayList<>(objects);
     }
 
@@ -322,6 +322,21 @@ public class SimpleBattle {
         }
 
         return currentTick >= nTicks;
+    }
+
+    // Only call this after making the ships for the safety code to work
+    private void makeAsteroids(int numberOfAsteroids) {
+        ArrayList<GameObject> createdAsteroids = new ArrayList<>(numberOfAsteroids);
+        double safeRadius = height / 20;
+        while(createdAsteroids.size() < numberOfAsteroids){
+            Vector2d randomPosition = Vector2d.getRandomCartesian(width, height, true);
+            Vector2d randomVelocity = Vector2d.getRandomPolar(2 * Math.PI, 0.5, 1.0, true);
+            if(Math.min(randomPosition.dist(s1.s), randomPosition.dist(s2.s)) > safeRadius){
+                createdAsteroids.add(new Asteroid(randomPosition, randomVelocity, 0));
+            }
+        }
+
+        objects.addAll(createdAsteroids);
     }
 
     static class PlayerStats {
