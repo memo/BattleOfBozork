@@ -57,15 +57,12 @@ public class SimpleBattle {
     BattleView view;
     int currentTick;
 
-
-    Datalyzer datalyzer;
     MSAFluidSolver2D fluid;
     java.awt.image.BufferedImage fluid_image;
 
 
     public SimpleBattle() {
         this(true);
-        datalyzer = new Datalyzer();
     }
 
     public SimpleBattle(boolean visible) {
@@ -97,7 +94,11 @@ public class SimpleBattle {
         return currentTick;
     }
 
-    public int playGame(BattleController p1, BattleController p2) {
+    public int playGame(BattleController p1, BattleController p2 ) {
+        return playGame(p1, p2, null);
+    }
+
+    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer ) {
         this.p1 = p1;
         this.p2 = p2;
         reset();
@@ -105,7 +106,8 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
-        datalyzer.begin();
+        if(datalyzer!=null)
+            datalyzer.begin();
 
         if (p1 instanceof KeyListener) {
             view.addKeyListener((KeyListener) p1);
@@ -120,7 +122,7 @@ public class SimpleBattle {
         }
 
         while (!isGameOver()) {
-            update();
+            update(datalyzer);
         }
 
         if (p1 instanceof KeyListener) {
@@ -130,7 +132,8 @@ public class SimpleBattle {
             view.removeKeyListener((KeyListener) p2);
         }
 
-        datalyzer.end(this, "data_test1");
+        if(datalyzer!=null)
+            datalyzer.end(this, "data_test1");
         return 0;
     }
 
@@ -155,14 +158,22 @@ public class SimpleBattle {
         return new NeuroShip(position, speed, direction, playerID);
     }
 
-    public void update() {
+    public void update()
+    {
+        update(null);
+    }
+
+    public void update( Datalyzer datalyzer)
+    {
         // get the actions from each player
 
         // apply them to each player's ship, taking actions as necessary
         Action a1 = p1.getAction(this.clone(), 0);
         Action a2 = p2.getAction(this.clone(), 1);
         update(a1, a2);
-        datalyzer.frame(this, new Action[]{a1,a2});
+
+        if(datalyzer!=null)
+            datalyzer.frame(this, new Action[]{a1,a2});
     }
 
     private void advect_fluid(GameObject o) {

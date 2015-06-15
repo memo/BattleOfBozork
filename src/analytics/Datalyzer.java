@@ -36,7 +36,7 @@ public class Datalyzer {
 
     public String getCsvLabels()
     {
-        return "pos_x, pos_y, thrust, turn, shooting, num_bullets, score\n";
+        return "frame, pos_x, pos_y, thrust, turn, shooting, num_bullets, score\n";
     }
 
     public class PlayerResult
@@ -78,7 +78,8 @@ public class Datalyzer {
                 for( int j = 0; j < n; j++ )
                 {
                     PlayerFrame pf = playerFrames[i].get(j);
-                    String line =   pf.pos.x + ", " +
+                    String line =   j + ", " + // frame
+                                    pf.pos.x + ", " +
                                     pf.pos.y + ", " +
                                     pf.thrust + ", " +
                                     pf.turn + ", " +
