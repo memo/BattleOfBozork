@@ -130,6 +130,7 @@ public class SimpleBattle {
 
         checkCollision(s1);
         checkCollision(s2);
+        for(GameObject object : objects) checkCollision(object);
 
         // and fire any missiles as necessary
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
@@ -195,9 +196,6 @@ public class SimpleBattle {
         if (!actor.dead() &&
                 (actor instanceof BattleMissile
                         || actor instanceof NeuroShip)) {
-            if (actor instanceof BattleMissile) {
-                // System.out.println("Missile: " + actor);
-            }
             for (GameObject ob : objects) {
                 if (overlap(actor, ob)) {
                     // the object is hit, and the actor is also
@@ -207,6 +205,7 @@ public class SimpleBattle {
                     stats.nPoints += pointsPerKill;
 
                     ob.hit();
+                    actor.hit();
                     return;
                 }
             }
