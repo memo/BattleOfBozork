@@ -21,13 +21,7 @@ public class WASDController implements BattleController, KeyListener {
 
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
-        if (currentAction == null) {
-            return NOOP;
-        }
-
-        Action lastAction = currentAction;
-        currentAction = null;
-        return lastAction;
+        return currentAction;
     }
 
     @Override
@@ -40,25 +34,41 @@ public class WASDController implements BattleController, KeyListener {
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
-                currentAction = FORWARD;
+                currentAction.thrust = 1;
                 break;
 
             case KeyEvent.VK_A:
-                currentAction = LEFT;
+                currentAction.turn = -1;
                 break;
 
             case KeyEvent.VK_D:
-                currentAction = RIGHT;
+                currentAction.turn = 1;
                 break;
 
             case KeyEvent.VK_SPACE:
-                currentAction = FIRE;
+                currentAction.shoot = true;
                 break;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W:
+                currentAction.thrust = 0;
+                break;
 
+            case KeyEvent.VK_A:
+                currentAction.turn = 0;
+                break;
+
+            case KeyEvent.VK_D:
+                currentAction.turn = 0;
+                break;
+
+            case KeyEvent.VK_SPACE:
+                currentAction.shoot = false;
+                break;
+        }
     }
 }
