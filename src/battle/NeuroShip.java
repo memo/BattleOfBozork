@@ -48,6 +48,7 @@ public class NeuroShip extends GameObject {
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
+    static int trail_collision_dist = 10;
 
     // trail vars
     static boolean trail_enabled = true;
@@ -188,6 +189,7 @@ public class NeuroShip extends GameObject {
         }
         g.setTransform(at);
 
+        g.setColor(color);
         drawTrail(g);
     }
 
@@ -237,11 +239,11 @@ public class NeuroShip extends GameObject {
     }
 
 
-    public boolean collisionWithTrail(Vector2d p, double dist_thresh) {
+    public boolean collisionWithTrail(Vector2d p) {
         if (!trail_enabled) return false;
 
         int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
-        double dist_thresh2 = dist_thresh * dist_thresh;
+        double dist_thresh2 = trail_collision_dist * trail_collision_dist;
         for (int i = 0; i < trail_end_index; i++) {
             int i1 = (i + trail_index) % trail_length;
             int i2 = (i1 + 1) % trail_length;
@@ -254,7 +256,7 @@ public class NeuroShip extends GameObject {
 
             if(doDraw) {
                 Vector2d closest_point = math.Util.closestPointOnSegment(p, p1, p2);
-                double dist2 = closest_point.magSquared();
+                double dist2 = closest_point.distSquared(p);
                 if (dist2 < dist_thresh2) return true;
             }
 
