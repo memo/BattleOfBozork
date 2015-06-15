@@ -7,20 +7,32 @@ data_2 <- read.table('data_test1_player1.csv',header=TRUE, sep=',' )
 
 head(data_1)
 
-plot(data_1$frame, data_1$pos_x,type='l', xlab="frame", ylab="pos_x")
-plot(data_1$pos_x, data_1$pos_y,type='l', xlab="x", ylab="y")
+# plots xy positions
+p = ggplot()
+p = p + geom_path(data=data_1, aes(x=pos_x, y=pos_y, colour="Pos player 1"))
+p = p + geom_path(data=data_2, aes(x=pos_x, y=pos_y, colour="Pos player 2"))
+print(p)
 
+# plots thrust
+p = ggplot()
+p = p + geom_path(data=data_1, aes(x=frame, y=thrust, colour="Thrust player 1"))
+p = p + geom_path(data=data_2, aes(x=frame, y=thrust, colour="Thrust player 2"))
+print(p)
 
-plot_overlap <- function(ox,sx,sy)
-{
-  vel_scaled = data_orig_xy 
-  vel_scaled$vel = vel_scaled$vel * sy
-  vel_scaled$time = vel_scaled$time * sx + ox
-  p = ggplot()
-  p = p + geom_line(data=data_xy_stripped, aes(x=time, y=vel, colour="Reconstructed")) 
-  p = p + geom_line(data=vel_scaled, aes(x=time, y=vel, colour="Scaled and Aligned Original")) 
-  p = p + labs(x="Time (seconds)",y = "Velocity (Screen Units per Second)", colour="")
-  return(p) 
-}
+# plots turn
+p = ggplot()
+p = p + geom_path(data=data_1, aes(x=frame, y=turn, colour="Turn player 1"))
+p = p + geom_path(data=data_2, aes(x=frame, y=turn, colour="Turn player 2"))
+print(p)
 
-plot_overlap(0.1,0.68,1.6)
+# plots scores
+p = ggplot()
+p = p + geom_line(data=data_1, aes(x=frame, y=score, colour = "Score player 1"))
+p = p + geom_line(data=data_2, aes(x=frame, y=score, colour = "Score player 2"))
+print(p)
+
+# plots bullets
+p = ggplot()
+p = p + geom_line(data=data_1, aes(x=frame, y=num_bullets, colour = "Score player 1"))
+p = p + geom_line(data=data_2, aes(x=frame, y=num_bullets, colour = "Score player 2"))
+print(p)

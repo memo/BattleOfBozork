@@ -303,8 +303,8 @@ public class DaniController implements RenderableBattleController
         grid = new ArrayList<Vector2d>();
         rtGrid = new ArrayList<Vector2d>();
 
-        for( int y = 0; y < size.height; y+=30 )
-            for( int x = 0; x < size.width; x+=30 )
+        for( int y = 0; y < size.height; y+=100 )
+            for( int x = 0; x < size.width; x+=100 )
             {
                 Vector2d p = new Vector2d(x,y);
 
