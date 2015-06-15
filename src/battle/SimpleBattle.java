@@ -65,7 +65,7 @@ public class SimpleBattle {
         this.p1 = p1;
         this.p2 = p2;
         reset();
-
+        makeAsteroids(numberOfAsteroids);
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
@@ -325,7 +325,7 @@ public class SimpleBattle {
     }
 
     // Only call this after making the ships for the safety code to work
-    public void makeAsteroids(int numberOfAsteroids) {
+    private void makeAsteroids(int numberOfAsteroids) {
         ArrayList<GameObject> createdAsteroids = new ArrayList<>(numberOfAsteroids);
         double safeRadius = height / 20;
         while(createdAsteroids.size() < numberOfAsteroids){
