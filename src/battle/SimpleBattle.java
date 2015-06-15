@@ -208,12 +208,12 @@ public class SimpleBattle {
         for(GameObject object : objects) checkCollision(object);
 
         // check collision with trail
-        if(s1.collisionWithTrail(s2.s)) {
+        if(s1.collisionWithTrail(s2, 0)) {
             System.out.println("s1 HIT");
             s2.hit();
         }
 
-        if(s2.collisionWithTrail(s1.s)) {
+        if(s2.collisionWithTrail(s1, 0)) {
             System.out.println("s1 HIT");
             s1.hit();
         }
@@ -237,6 +237,8 @@ public class SimpleBattle {
 
                 // advect fluid
                 if(DO_FLUID) advect_fluid(object);
+                s1.collisionWithTrail(object, 1);
+                s2.collisionWithTrail(object, 1);
             }
         }
 

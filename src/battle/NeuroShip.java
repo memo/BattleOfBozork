@@ -239,11 +239,11 @@ public class NeuroShip extends GameObject {
     }
 
 
-    public boolean collisionWithTrail(Vector2d p) {
+    public boolean collisionWithTrail(GameObject o, float bounce_factor) {
         if (!trail_enabled) return false;
 
         int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
-        double dist_thresh2 = trail_collision_dist * trail_collision_dist;
+        double dist_thresh2 = o.r * o.r;
         for (int i = 0; i < trail_end_index; i++) {
             int i1 = (i + trail_index) % trail_length;
             int i2 = (i1 + 1) % trail_length;
@@ -255,9 +255,29 @@ public class NeuroShip extends GameObject {
             if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
 
             if(doDraw) {
-                Vector2d closest_point = math.Util.closestPointOnSegment(p, p1, p2);
-                double dist2 = closest_point.distSquared(p);
-                if (dist2 < dist_thresh2) return true;
+                Vector2d closest_point = math.Util.closestPointOnSegment(o.s, p1, p2);
+                double dist2 = closest_point.distSquared(o.s);
+                if (dist2 < dist_thresh2) {
+
+                    // bounce game object
+                    if(bounce_factor > 0) {
+                        // normalized segment vector p1->p2
+                        Vector2d seg_norm = Vector2d.subtract(p2, p1);
+                        seg_norm.normalise();
+
+                        // velocity vector segment component = vel dot seg_norm
+                        double vel_edge_mag = o.v.dot(seg_norm);
+                        Vector2d vel_edge = Vector2d.multiply(seg_norm, vel_edge_mag);
+
+                        // velocty perpendicular component = vel - vel_edge
+                        Vector2d vel_perp = Vector2d.subtract(o.v, vel_edge);
+                        vel_perp.multiply(-bounce_factor);
+
+                        o.v = Vector2d.add(vel_perp, vel_edge);
+
+                    }
+                    return true;
+                }
             }
 
         }
