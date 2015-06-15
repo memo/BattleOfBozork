@@ -1,5 +1,7 @@
 package battle;
 
+import analytics.Datalyzer;
+
 import battle.controllers.Memo.MemoControllerRandom;
 import battle.controllers.Memo.MemoController1;
 import battle.controllers.mmmcts.MMMCTS;
@@ -17,7 +19,7 @@ public class MemoBattleTest {
 
         BattleController player1 = new WASDController();
         BattleController player2 = new MMMCTS();
-        battle.playGame(player1, player2);
+        battle.playGame(player1, player2, new Datalyzer() );
     }
 
 }

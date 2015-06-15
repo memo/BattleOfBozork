@@ -1,5 +1,6 @@
 package battle;
 
+import analytics.Datalyzer;
 import battle.controllers.EmptyController;
 import battle.controllers.FireForwardController;
 import battle.controllers.Human.WASDController;
@@ -19,7 +20,7 @@ public class BattleTest {
 
         BattleController player1 = new Naz_AI();
         BattleController player2 = new StupidGAWrapper(new double[]{2.7631328506251744, 0.746687716615824, 0.11574670823251669});
-        battle.playGame(player1, player2);
+        battle.playGame(player1, player2, new Datalyzer());
     }
 
 }
