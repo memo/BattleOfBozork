@@ -212,7 +212,6 @@ public class SimpleBattle {
             if (object.dead()) {
                 killList.add(object);
             } else {
-
                 // advect fluid
                 if(DO_FLUID) advect_fluid(object);
             }
@@ -224,7 +223,7 @@ public class SimpleBattle {
             advect_fluid(s2);
             fluid.update();
         }
-
+//        if(!killList.isEmpty())System.out.println(killList);
         objects.removeAll(killList);
         currentTick++;
 
@@ -270,9 +269,20 @@ public class SimpleBattle {
         // check with all other game objects
         // but use a hack to only consider interesting interactions
         // e.g. asteroids do not collide with themselves
-        if (!actor.dead() &&
-                (actor instanceof BattleMissile
-                        || actor instanceof NeuroShip)) {
+        if (actor instanceof Missile){
+            System.out.println("Battle Missile checking");
+            for(GameObject ob : objects){
+                if(ob instanceof Asteroid){
+                    System.out.println("We are checking");
+                }
+                if(overlap(actor, ob)){
+                    actor.hit();
+                    ob.hit();
+                    return;
+                }
+            }
+
+        } else if(actor instanceof NeuroShip) {
             for (GameObject ob : objects) {
                 if (overlap(actor, ob)) {
                     // the object is hit, and the actor is also
@@ -353,7 +363,7 @@ public class SimpleBattle {
         }
 
         for (GameObject go : objects) {
-            go.draw(g);
+            if(!go.dead()) go.draw(g);
         }
 
         s1.draw(g);
@@ -407,6 +417,7 @@ public class SimpleBattle {
     }
 
     public boolean isGameOver() {
+        if(s1.dead() || s2.dead()) return true;
         if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
             //ensure that there are no bullets left in play
             if (objects.isEmpty()) {
