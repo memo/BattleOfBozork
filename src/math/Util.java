@@ -9,17 +9,17 @@ public class Util {
         return min;
     }
 
-    public double angleBetween( Vector2d a, Vector2d b )
+    public static  double angleBetween( Vector2d a, Vector2d b )
     {
         return Math.atan2(a.x * b.y - a.y * b.x, a.x * b.x + a.y * b.y);
     }
 
-    double dot( Vector2d a, Vector2d b )
+    public static  double dot( Vector2d a, Vector2d b )
     {
         return a.x*b.x + a.y*b.y;
     }
 
-    Vector2d  closestPointOnSegment( Vector2d p, Vector2d a, Vector2d b )
+    public static  Vector2d  closestPointOnSegment( Vector2d p, Vector2d a, Vector2d b )
     {
         Vector2d v = Vector2d.subtract(b, a);
         Vector2d w = Vector2d.subtract(p, a);
@@ -38,9 +38,14 @@ public class Util {
         return Vector2d.add(a, Vector2d.multiply(v, t));
     }
 
-    double distanceToSegment( Vector2d p, Vector2d a, Vector2d b )
+    public static double distanceToSegment( Vector2d p, Vector2d a, Vector2d b )
     {
         return p.dist( closestPointOnSegment(p,a,b) );
+    }
+
+    public static int boolToInt( boolean v )
+    {
+        return (v)?1:0;
     }
 
 }
