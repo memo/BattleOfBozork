@@ -218,7 +218,11 @@ public class SimpleBattle {
         }
 
         // solve fluid
-        if(DO_FLUID) fluid.update();
+        if(DO_FLUID) {
+            advect_fluid(s1);
+            advect_fluid(s2);
+            fluid.update();
+        }
 
         objects.removeAll(killList);
         currentTick++;
