@@ -49,4 +49,6 @@ public interface Constants {
     // scaling factor applied to random asteroid speed
     double speedScale = 0.5;
 
+    int numberOfAsteroids = 25;
+
 }
