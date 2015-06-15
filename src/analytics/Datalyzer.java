@@ -6,8 +6,7 @@ import battle.SimpleBattle;
 import math.Vector2d;
 import math.Util;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -57,31 +56,46 @@ public class Datalyzer {
     {
         // :S
         playerFrames =  (ArrayList<PlayerFrame>[])new ArrayList[2];
+        for( int i = 0; i < 2; i++ )
+        {
+            playerFrames[i] = new ArrayList<PlayerFrame>();
+        }
         results = new PlayerResult[2];
     }
 
     public void end( SimpleBattle gameState, String name )
     {
-        for( int i = 0; i < 2; i++ )
-        {
-            /*
-            FileWriter frameFile = new FileWriter(path + name + "_player" + i + ".csv");
-
-            frameFile.write( getCsvLabels() );
-
-            int n = playerFrames[i].size();
-
-            for( int j = 0; j < n; j++ )
+        try {
+            for (int i = 0; i < 2; i++)
             {
-                PlayerFrame pf = playerFrames[i].get(j);
-                String line =   pf.pos.x + ", " +
-                                pf.pos.y + ", " +
-                                pf.thrust + ", " +
-                                pf.turn + ", " +
-                                pf.shooting + ", " +
-                                pf.numBullets + ", " +
-                                pf.score;
-            }*/
+
+                PrintWriter frameFile = new PrintWriter( path + name + "_player" + i + ".csv", "UTF-8");
+
+                frameFile.print(getCsvLabels());
+
+                int n = playerFrames[i].size();
+
+                for( int j = 0; j < n; j++ )
+                {
+                    PlayerFrame pf = playerFrames[i].get(j);
+                    String line =   pf.pos.x + ", " +
+                                    pf.pos.y + ", " +
+                                    pf.thrust + ", " +
+                                    pf.turn + ", " +
+                                    pf.shooting + ", " +
+                                    pf.numBullets + ", " +
+                                    pf.score +
+                                    "\n";
+                    frameFile.print(line);
+                }
+
+                frameFile.close();
+            }
+        }
+        catch (IOException e)
+        {
+            System.out.println(e);
+            System.out.println("Damn you IO");
         }
     }
 

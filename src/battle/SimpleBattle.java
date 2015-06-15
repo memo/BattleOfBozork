@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import static asteroids.Constants.*;
+import analytics.Datalyzer;
 
 /**
  * Created by simon lucas on 10/06/15.
@@ -42,8 +43,11 @@ public class SimpleBattle {
     BattleView view;
     int currentTick;
 
+    Datalyzer datalyzer;
+
     public SimpleBattle() {
         this(true);
+        datalyzer = new Datalyzer();
     }
 
     public SimpleBattle(boolean visible) {
@@ -69,6 +73,8 @@ public class SimpleBattle {
         stats.add(new PlayerStats(0, 0));
         stats.add(new PlayerStats(0, 0));
 
+        datalyzer.begin();
+
         if (p1 instanceof KeyListener) {
             view.addKeyListener((KeyListener) p1);
             view.setFocusable(true);
@@ -92,6 +98,7 @@ public class SimpleBattle {
             view.removeKeyListener((KeyListener) p2);
         }
 
+        datalyzer.end(this, "data_test1");
         return 0;
     }
 
@@ -121,6 +128,7 @@ public class SimpleBattle {
         Action a1 = p1.getAction(this.clone(), 0);
         Action a2 = p2.getAction(this.clone(), 1);
         update(a1, a2);
+        datalyzer.frame(this, new Action[]{a1,a2});
     }
 
     public void update(Action a1, Action a2) {
