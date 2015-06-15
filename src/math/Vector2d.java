@@ -204,7 +204,17 @@ public class Vector2d {
      * The magnitude
      */
     public double mag() {
-        return (Math.sqrt(x * x + y * y));
+        return Math.sqrt(magSquared());
+    }
+
+    /**
+     * Returns the mathematical magnitude squared of this
+     *
+     * @return double
+     * The magnitude squared
+     */
+    public double magSquared() {
+        return x * x + y * y;
     }
 
     /**
@@ -463,10 +473,15 @@ public class Vector2d {
 
     // distance to argument vector
     public double dist(Vector2d v) {
+        return Math.sqrt(distSquared(v));
+    }
+
+    // distance squared to argument vector
+    public double distSquared(Vector2d v) {
         double tempX = (x - v.getX()) * (x - v.getX());
         double tempY = (y - v.getY()) * (y - v.getY());
 
-        return (Math.sqrt(tempX + tempY));
+        return tempX + tempY;
     }
 
     public void clone(Vector2d target) {
