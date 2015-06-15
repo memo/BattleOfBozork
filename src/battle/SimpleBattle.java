@@ -27,7 +27,7 @@ import msafluid.MSAFluidSolver2D;
  */
 
 public class SimpleBattle {
-    static boolean DO_FLUID = true;
+    boolean DO_FLUID = true;
     static float FLUID_VEL_MULT = 2;
     static float FLUID_COLOR_MULT = 0.2f;
     static int FLUID_NX = 100;
@@ -241,6 +241,7 @@ public class SimpleBattle {
         state.stats = copyStats();
         state.currentTick = currentTick;
         state.visible = false; //stop MCTS people having all the games :p
+        state.DO_FLUID = false;
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
