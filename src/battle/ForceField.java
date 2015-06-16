@@ -26,7 +26,7 @@ class ForceObj{
     static public Color attractColor = Color.green;
     static public Color repulseColor = Color.red;
     static public boolean normalize = false;
-    static public double multiplier = 1.0; // This will define the magnitude
+    static public double multiplier = 4.0; // This will define the magnitude
 }
 
 
@@ -324,10 +324,16 @@ public class ForceField {
     public Vector2d getForceAt( Vector2d pos )
     {
         Vector2d f = new Vector2d(0, 0, true);
+        Vector2d v = new Vector2d(0,0);
         // accumulate forces.
         for( int i = 0; i < forceObjs.size(); i++ )
-            f.add(forceObjs.get(i).getForceAt(pos));
-
+        {
+            ForceObj obj = forceObjs.get(i);
+            if( obj != null ) {
+                v = obj.getForceAt(pos);
+                f.add(v);//forceObjs.get(i).getForceAt(pos));
+            }
+        }
         return f;
     }
 
@@ -363,8 +369,15 @@ public class ForceField {
         }
 
         // draw objects
-        for( int i = 0; i < forceObjs.size(); i++ )
-            forceObjs.get(i).draw(g);
+        try {
+            for (int i = 0; i < forceObjs.size(); i++)
+                if(forceObjs.get(i) != null)
+                    forceObjs.get(i).draw(g);
+        }
+        catch( java.lang.NullPointerException e )
+        {
+            System.out.println("Cazzo");
+        }
     }
 }
 
