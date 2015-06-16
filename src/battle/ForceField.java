@@ -26,7 +26,7 @@ class ForceObj{
     static public Color attractColor = Color.green;
     static public Color repulseColor = Color.red;
     static public boolean normalize = true;
-    static public double multiplier = 200.0;
+    static public double multiplier = 200.0; // This will define the magnitude
 }
 
 

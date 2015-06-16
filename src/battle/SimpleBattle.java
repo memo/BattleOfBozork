@@ -213,13 +213,13 @@ public class SimpleBattle {
 
         // check collision with trail
         if (s1.collisionWithTrail(s2, trail_bounce_factor)) {
-            System.out.println("s2 hit trail of s1");
+            //System.out.println("s2 hit trail of s1");
             this.stats.get(1).nPoints -= damageTrailHit;
             s2.hit();
         }
 
         if (s2.collisionWithTrail(s1, trail_bounce_factor)) {
-            System.out.println("s1 hit trail of s2");
+            //System.out.println("s1 hit trail of s2");
             this.stats.get(0).nPoints -= damageTrailHit;
             s1.hit();
         }
