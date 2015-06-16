@@ -1,5 +1,6 @@
 package gameRunner;
 
+import analytics.Datalyzer;
 import battle.BattleController;
 import battle.SimpleBattle;
 import battle.controllers.Dani.DaniController;
@@ -38,13 +39,14 @@ public class GameRunner {
 
     public void runTheGames() {
         SimpleBattle battle = new SimpleBattle(false);
+        battle.DO_FLUID = false;
         battle.reset();
 
         for(BattleController p1 : controllers){
             for(BattleController p2 : controllers){
                 if(p1 != p2){
                     for(int i = 0; i < gamesPerMatchup; i++) {
-                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2));
+                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, p1.getClass().getSimpleName() + "-" + p2.getClass().getSimpleName() + "-" + i));
                     }
                 }
             }
@@ -78,17 +80,19 @@ class GameRunnerWrapper implements Callable<Object> {
     SimpleBattle game;
     BattleController p1;
     BattleController p2;
+    String name;
 
-    public GameRunnerWrapper(SimpleBattle game, BattleController p1, BattleController p2) {
+    public GameRunnerWrapper(SimpleBattle game, BattleController p1, BattleController p2, String name) {
         this.game = game;
         this.p1 = p1;
         this.p2 = p2;
+        this.name = name;
     }
 
     @Override
     public Object call() throws Exception {
-        game.playGame(p1, p2);
-        System.out.println("Finished: " + p1.getClass().getSimpleName() + " Vs " + p2.getClass().getSimpleName());
+        game.playGame(p1, p2, new Datalyzer(name));
+        System.out.println("Finished: " + name);
         return null;
     }
 }
