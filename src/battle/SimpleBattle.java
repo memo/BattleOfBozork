@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static asteroids.Constants.*;
 
@@ -51,10 +53,9 @@ public class SimpleBattle {
     public boolean DO_FLUID = true;
     boolean visible = true;
 
-    DoubleWithRange TRAIL_LENGTH = new DoubleWithRange("trail_length", 200, 0, NeuroShip.trail_length_max);
-    DoubleWithRange TRAIL_MOMENTUM = new DoubleWithRange("trail_momentum", 0.985, 0.9, 1.0);
 
-   // Map dictionary = new HashMap();
+    String param_trail_length = "";
+    Map<String, DoubleWithRange> params = new HashMap<String, DoubleWithRange>(); // see initParams
 
 
     ArrayList<BattleController> controllers;
@@ -71,11 +72,18 @@ public class SimpleBattle {
     java.awt.image.BufferedImage fluid_image;
 
 
+    public void initParams() {
+        params.put("trail_length", new DoubleWithRange(200, 0, NeuroShip.trail_length_max));
+        params.put("trail_momentum", new DoubleWithRange(0.985, 0.9, 1.0));
+    }
+
     public SimpleBattle() {
         this(true);
     }
 
     public SimpleBattle(boolean visible) {
+        initParams();
+
         this.objects = new ArrayList<GameObject>();
         this.stats = new ArrayList<PlayerStats>();
         this.visible = visible;
@@ -165,8 +173,11 @@ public class SimpleBattle {
         Vector2d position = new Vector2d(x, y, true);
         Vector2d speed = new Vector2d(true);
         Vector2d direction = new Vector2d(1, 0, true);
+        NeuroShip ship = new NeuroShip(position, speed, direction, playerID);
+        ship.trail_momentum = params.get("trail_momentum").getDouble();
+        ship.trail_length = params.get("trail_length").getInt();
 
-        return new NeuroShip(position, speed, direction, playerID);
+        return ship;
     }
 
     public void update() {
