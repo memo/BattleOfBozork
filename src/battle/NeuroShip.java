@@ -25,7 +25,7 @@ public class NeuroShip extends GameObject {
     static double maxSpeed = 3;
 
     // this is the friction that makes the ship slow down over time
-    static double loss = 0.99;
+    static double loss = 0.997;
 
     double releaseVelocity = 0;
     double minVelocity = 2;
@@ -230,7 +230,7 @@ public class NeuroShip extends GameObject {
         if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
         int real_trail_length = trail_length / trail_emit_frame_count;
         int trail_end_index = trail_close_loop ? real_trail_length : real_trail_length - 1;
-        double dist_thresh2 = o.r * o.r;
+        double dist_thresh2 = (o.r() * o.r()) + (r() * r()) + 4;    // MEGA HACK
         for (int i = 0; i < trail_end_index; i++) {
             int i1 = (i + trail_index) % real_trail_length;
             int i2 = (i1 + 1) % real_trail_length;
