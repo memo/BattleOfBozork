@@ -46,10 +46,10 @@ public class NeuroShip extends GameObject {
     // trail parameters
     static boolean trail_enabled = true;
     static int trail_length_max = 500;
- //   static DoubleWithRange trail_length = new DoubleWithRange("trail_length", 200, 0, trail_length_max);
-  //  static DoubleWithRange trail_momentum = new DoubleWithRange("trail_momentum", 0.985, 0.9, )
-    static int trail_length = 200;
-    static double trail_momentum = 0.985;
+    static DoubleWithRange trail_length = new DoubleWithRange("trail_length", 200, 0, trail_length_max);
+    static DoubleWithRange trail_momentum = new DoubleWithRange("trail_momentum", 0.985, 0.9, 1.0);
+  //  static int trail_length = 200;
+   // static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
@@ -59,8 +59,7 @@ public class NeuroShip extends GameObject {
     Vector2d[] trail_pos = new Vector2d[trail_length_max];
     Vector2d[] trail_vel = new Vector2d[trail_length_max];
     int trail_index = 0;
-    int trail_frame_counter = 0;
-    int trail_emit_frame_count = 0;
+    int trail_collision_step_count = 1;
 
     // hit draw
     int hit_draw_counter = 0;        // frame counter used for drawing hit indicator
@@ -70,7 +69,7 @@ public class NeuroShip extends GameObject {
     static public void setTrailLength(int n) {
         if (n < 1) n = 1;
         else if (n >= trail_length_max - 1) n = trail_length_max - 1;
-        trail_length = n;
+        trail_length.value = n;
     }
 
 
@@ -79,12 +78,11 @@ public class NeuroShip extends GameObject {
         this.d = new Vector2d(d, true);
         this.playerID = playerID;
 
-        setTrailLength(trail_length);
+        setTrailLength(trail_length.getInt());
         for (int i = 0; i < trail_length_max; i++) {
             trail_pos[i] = new Vector2d(s.x, s.y, true);
             trail_vel[i] = new Vector2d(0, 0, true);
         }
-        trail_frame_counter = 0;
     }
 
     public NeuroShip copy() {
@@ -92,8 +90,7 @@ public class NeuroShip extends GameObject {
         ship.trail_pos = trail_pos.clone();
         ship.trail_vel = trail_vel.clone();
         ship.trail_index = trail_index;
-        ship.trail_frame_counter = trail_frame_counter;
-        ship.trail_emit_frame_count = trail_emit_frame_count;
+        ship.trail_collision_step_count = 10;//trail_collision_step_count;
 
 //        ship.trail_emit_frame_count = 5;
         ship.releaseVelocity = releaseVelocity;
@@ -110,7 +107,6 @@ public class NeuroShip extends GameObject {
         v.zero();
         d.set(0, -1);
         dead = false;
-        trail_frame_counter = 0;
         // System.out.println("Reset the ship ");
     }
 
@@ -225,8 +221,6 @@ public class NeuroShip extends GameObject {
     public void hit() {
         // super.hit();
         // System.out.println("Ship destroyed");
-
-
         // sounds.play(sounds.bangLarge);
         hit_draw_counter = hit_draw_num_frames;
     }
@@ -235,79 +229,69 @@ public class NeuroShip extends GameObject {
         dead = true;
     }
 
-
-
     public boolean dead() {
         return dead;
     }
 
 
+    public int getTrailLength() { return trail_length.getInt(); }
+
+
+    public Vector2d getTrailPoint(int i)
+    {
+        if(i<0) i+= trail_length.getInt();
+        return trail_pos[(trail_index + i) % trail_length.getInt()];
+    }
+
     private void updateTrail() {
         if (!trail_enabled) return;
 
-        if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
-        int real_trail_length = trail_length / trail_emit_frame_count;
-        if(trail_frame_counter % trail_emit_frame_count == 0 && s.distSquared(getTrailPoint(-1)) > trail_min_segment_length * trail_min_segment_length) {
-            trail_index = trail_index % real_trail_length;
-            trail_pos[trail_index].x = s.x;
-            trail_pos[trail_index].y = s.y;
-            trail_vel[trail_index].x = v.x;
-            trail_vel[trail_index].y = v.y;
-            trail_index = (trail_index + 1) % real_trail_length;
+        int i_trail_length = trail_length.getInt();
+        trail_index = trail_index % i_trail_length;
+
+        if(trail_min_segment_length == 0 || s.distSquared(getTrailPoint(-1)) > trail_min_segment_length * trail_min_segment_length) {
+            trail_pos[trail_index].set(s);
+            trail_vel[trail_index].set(v);
+            trail_index = (trail_index + 1) % i_trail_length;
         }
 
-        for (int i = 0; i < real_trail_length; i++) {
-            trail_vel[i].multiply(trail_momentum);
+        for (int i = 0; i < i_trail_length; i++) {
             trail_pos[i].add(trail_vel[i]);
+            trail_vel[i].multiply(trail_momentum.getDouble());
         }
-        trail_frame_counter++;
     }
 
     private void drawTrail(Graphics2D g) {
         if (!trail_enabled) return;
 
-        if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
-        int real_trail_length = trail_length / trail_emit_frame_count;
-        int trail_end_index = trail_close_loop ? real_trail_length : real_trail_length - 1;
+        int i_trail_length = trail_length.getInt();
+        int trail_end_index = trail_close_loop ? i_trail_length :i_trail_length - 1;
         for (int i = 0; i < trail_end_index; i++) {
-            int i1 = (i + trail_index) % real_trail_length;
-            int i2 = (i1 + 1) % real_trail_length;
-            Vector2d p1 = trail_pos[i1];
-            Vector2d p2 = trail_pos[i2];
-            boolean doDraw = true;
+            Vector2d p1 = getTrailPoint(i);
+            Vector2d p2 = getTrailPoint(i+1);
+            boolean do_it = true;
 
-            if (!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) doDraw = false;
-            if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
-            if (doDraw) g.drawLine((int) p1.x, (int) p1.y, (int) p2.x, (int) p2.y);
+            if (!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) do_it = false;
+            if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) do_it = false;
+            if (do_it) g.drawLine((int) p1.x, (int) p1.y, (int) p2.x, (int) p2.y);
         }
-    }
-
-    public int getTrailLength() { return trail_length; }
-
-
-    public Vector2d getTrailPoint(int i)
-    {
-        return trail_pos[(trail_index + i + trail_length) % trail_length];
     }
 
     public boolean collisionWithTrail(GameObject o, double bounce_factor) {
         if (!trail_enabled) return false;
 
-        if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
-        int real_trail_length = trail_length / trail_emit_frame_count;
-        int trail_end_index = trail_close_loop ? real_trail_length : real_trail_length - 1;
         double dist_thresh2 = (o.r() * o.r()) + (r() * r()) + 4;    // MEGA HACK
-        for (int i = 0; i < trail_end_index; i++) {
-            int i1 = (i + trail_index) % real_trail_length;
-            int i2 = (i1 + 1) % real_trail_length;
-            Vector2d p1 = trail_pos[i1];
-            Vector2d p2 = trail_pos[i2];
-            boolean doDraw = true;
+        if(trail_collision_step_count<1) trail_collision_step_count = 1;
+        int i_trail_length = trail_length.getInt();
+        int trail_end_index = trail_close_loop ? i_trail_length :i_trail_length - 1;
+        for (int i = 0; i < trail_end_index; i +=  trail_collision_step_count) {
+            Vector2d p1 = getTrailPoint(i);
+            Vector2d p2 = getTrailPoint(i+1);
+            boolean do_it = true;
 
-            if (!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) doDraw = false;
-            if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) doDraw = false;
-
-            if(doDraw) {
+            if (!trail_wrap_x && Math.abs(p1.x - p2.x) > Constants.width * 0.9) do_it = false;
+            if (!trail_wrap_y && Math.abs(p1.y - p2.y) > Constants.height * 0.9) do_it = false;
+            if(do_it) {
                 Vector2d closest_point = math.Util.closestPointOnSegment(o.s, p1, p2);
                 double dist2 = closest_point.distSquared(o.s);
                 if (dist2 < dist_thresh2) {

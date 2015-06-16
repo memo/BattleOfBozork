@@ -17,6 +17,14 @@ public class DoubleWithRange {
         range = new Range(min, max);
     }
 
+    public double getDouble() {
+        return value;
+    }
+
+    public int getInt() {
+        return (int) value;
+    }
+
     public void randomize() {
         this.value = Math.random() * (range.max - range.min) + range.min;
     }
