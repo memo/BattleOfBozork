@@ -14,6 +14,8 @@ import asteroids.Missile;
 import battle.Asteroid;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import math.Vector2d;
 import math.Util;
@@ -25,7 +27,7 @@ import java.awt.geom.AffineTransform;
 /**
  * Created by simonlucas on 30/05/15.
  */
-public class ForceControllerTest implements RenderableBattleController
+public class ForceControllerTest implements RenderableBattleController, KeyListener
 {
     int myPlayerId = 0;
 
@@ -33,13 +35,15 @@ public class ForceControllerTest implements RenderableBattleController
 
     Action action;
 
-    double viewRadius = 20.0;
+    double viewRadius = 40.0;
     double thrustAmt = 1.5;
-    double rotAmt = 2.5;
+    double rotAmt = 1.5;
     int shotWait = 0;
     int shotDelay = 1;
 
     boolean anyMissiles = false;
+
+    boolean debugDraw = true; // Use V key to toggle
 
     ArrayList<Vector2d> foo = new ArrayList<Vector2d>();
 
@@ -47,6 +51,7 @@ public class ForceControllerTest implements RenderableBattleController
     {
         action = new Action();
         thrustAmt = 0.5 + Math.random();
+
     }
 
     public Action action(GameState game) {
@@ -167,7 +172,7 @@ public class ForceControllerTest implements RenderableBattleController
 
     public NeuroShip getEnemyShip( SimpleBattle gstate )
     {
-        return gstate.getShip((myPlayerId == 1)?0:1);
+        return gstate.getShip((myPlayerId == 1) ? 0 : 1);
     }
 
     @Override
@@ -177,7 +182,7 @@ public class ForceControllerTest implements RenderableBattleController
 
         Action res = new Action(0,0,false);
         NeuroShip ship = gstate.getShip(playerId);
-        NeuroShip enemy = gstate.getShip((playerId == 1)?0:1);
+        NeuroShip enemy = gstate.getShip((playerId == 1) ? 0 : 1);
 
         Vector2d enemyPos = enemy.s;
         Vector2d shipPos = ship.s;
@@ -203,10 +208,35 @@ public class ForceControllerTest implements RenderableBattleController
         return res;
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
 
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_V:
+                if(debugDraw==true)
+                    debugDraw = false;
+                else
+                    debugDraw = true;
+                break;
+
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 
     @Override
     public void render( Graphics2D g, NeuroShip s ) {
+        if(!debugDraw)
+            return;
+        
         AffineTransform at = g.getTransform();
 
         ff.draw(g, size.width, size.height, 50);
