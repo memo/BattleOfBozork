@@ -13,8 +13,6 @@ import java.awt.*;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 import static asteroids.Constants.*;
 
@@ -29,7 +27,6 @@ import static asteroids.Constants.*;
 
 public class SimpleBattle {
 
-    boolean DO_FLUID = true;
     static float FLUID_VEL_MULT = 1;
     static float FLUID_COLOR_MULT = 0.5f;
     static int FLUID_NX = 100;
@@ -45,6 +42,7 @@ public class SimpleBattle {
     static int pointsPerAsteroidKill = 10;
     static int pointsPerEnemyKill = 10000;
     static int releaseVelocity = 5;
+    public boolean DO_FLUID = true;
     boolean visible = true;
 
     ArrayList<BattleController> controllers;
@@ -206,12 +204,12 @@ public class SimpleBattle {
         for (GameObject object : objects) checkCollision(object);
 
         // check collision with trail
-        if(s1.collisionWithTrail(s2, 0)) {
+        if (s1.collisionWithTrail(s2, 0)) {
             System.out.println("s1 HIT");
             s2.hit();
         }
 
-        if(s2.collisionWithTrail(s1, 0)) {
+        if (s2.collisionWithTrail(s1, 0)) {
             System.out.println("s1 HIT");
             s1.hit();
         }
@@ -233,7 +231,7 @@ public class SimpleBattle {
                 killList.add(object);
             } else {
                 // advect fluid
-                if(DO_FLUID) advect_fluid(object);
+                if (DO_FLUID) advect_fluid(object);
                 s1.collisionWithTrail(object, 1);
                 s2.collisionWithTrail(object, 1);
 
@@ -295,10 +293,19 @@ public class SimpleBattle {
         if (actor instanceof Missile) {
 //            System.out.println("Battle Missile checking");
             for (GameObject ob : objects) {
-                if (overlap(actor, ob)) {
-                    actor.hit();
-                    ob.hit();
-                    return;
+                if (!(ob instanceof Missile)) {
+                    if (overlap(actor, ob)) {
+                        if (ob instanceof NeuroShip) {
+                            int playerID = (ob == s1 ? 0 : 1);
+                            this.stats.get(playerID).nPoints -= pointsPerEnemyKill;
+                            this.stats.get(playerID == 0 ? 1 : 0).nPoints += pointsPerEnemyKill;
+                        }else if(ob instanceof Asteroid){
+                            // argh, missiles don't know who we give the points to :(
+                        }
+                        actor.hit();
+                        ob.hit();
+                        return;
+                    }
                 }
             }
 
@@ -306,15 +313,13 @@ public class SimpleBattle {
             for (GameObject ob : objects) {
                 if (overlap(actor, ob)) {
                     // the object is hit, and the actor is also
-
                     int playerID = (actor == s1 ? 1 : 0);
-                    PlayerStats stats = this.stats.get(playerID);
                     if (ob instanceof Missile) {
+                        // good to hit a ship though
                         this.stats.get(playerID == 0 ? 1 : 0).nPoints += pointsPerEnemyKill;
-                        this.stats.get(playerID).nPoints -= pointsPerEnemyKill;
-                    }else{
-                        stats.nPoints += pointsPerAsteroidKill;
                     }
+                    // always bad for a ship to get hit
+                    this.stats.get(playerID).nPoints -= pointsPerEnemyKill;
 
                     ob.hit();
                     actor.hit();

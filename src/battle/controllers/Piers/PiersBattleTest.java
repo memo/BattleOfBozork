@@ -3,7 +3,6 @@ package battle.controllers.Piers;
 import battle.BattleController;
 import battle.SimpleBattle;
 import battle.controllers.EmptyController;
-import battle.controllers.Memo.MemoControllerRandom;
 import battle.controllers.RotateAndShoot;
 import battle.controllers.mmmcts.MMMCTS;
 
@@ -14,8 +13,9 @@ public class PiersBattleTest {
 
     public static void main(String[] args) {
         SimpleBattle battle = new SimpleBattle();
-        BattleController player1 = new EmptyController();
-        BattleController player2 = new RotateAndShoot();
+        battle.DO_FLUID = false;
+        BattleController player1 = new MMMCTS();
+        BattleController player2 = new PiersMCTS();
         battle.playGame(player1, player2);
     }
 }
