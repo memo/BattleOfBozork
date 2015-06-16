@@ -48,7 +48,8 @@ public class NeuroShip extends GameObject {
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
-    static int trail_collision_dist = 10;
+
+    static int trail_min_segment_length = 10;
 
     // trail vars
     static boolean trail_enabled = true;
