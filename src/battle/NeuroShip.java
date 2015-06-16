@@ -90,11 +90,6 @@ public class NeuroShip extends GameObject {
         return scale * 2.4;
     }
 
-//    public Ship() {
-//        super(new Vector2d(), new Vector2d());
-//        d = new Vector2d(0, -1);
-//    }
-//
 
     public void reset() {
         s.set(width / 2, height / 2);
@@ -119,13 +114,6 @@ public class NeuroShip extends GameObject {
 
 
     public NeuroShip update(Action action) {
-
-        // what if this is always on?
-
-        // action has fields to specify thrust, turn and shooting
-
-        // action.thrust = 1;
-
         if (action.thrust > 0) {
             thrusting = true;
         } else {
@@ -151,23 +139,6 @@ public class NeuroShip extends GameObject {
         updateTrail();
 
         return this;
-    }
-
-    private void tryMissileLaunch() {
-        // System.out.println("Trying a missile launch");
-        if (releaseVelocity > maxRelease) {
-            releaseVelocity = Math.max(releaseVelocity, missileMinVelocity * 2);
-            Missile m = new Missile(s, new Vector2d(0, 0, true));
-            releaseVelocity = Math.min(releaseVelocity, maxRelease);
-            m.v.add(d, releaseVelocity);
-            // make it clear the ship
-            m.s.add(m.v, (r() + missileRadius) * 1.5 / m.v.mag());
-            releaseVelocity = 0;
-            // System.out.println("Fired: " + m);
-            // sounds.fire();
-        } else {
-            // System.out.println("Failed!");
-        }
     }
 
     public String toString() {
@@ -291,13 +262,10 @@ public class NeuroShip extends GameObject {
                         vel_perp.multiply(-bounce_factor);
 
                         o.v = Vector2d.add(vel_perp, vel_edge);
-
-
                     }
                     return true;
                 }
             }
-
         }
 
         return false;
