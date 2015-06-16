@@ -402,10 +402,14 @@ public class SimpleBattle {
             g.drawImage(fluid_image, 0, 0, Constants.width, Constants.height, null);
         }
 
-        for (GameObject go : objects) {
-            if (!go.dead()) go.draw(g);
-        }
+        try {
+            for (GameObject go : objects) {
+                if (!go.dead()) go.draw(g);
+            }
+        }catch (java.util.ConcurrentModificationException e)
+        {
 
+        }
         s1.draw(g);
         if (p1 instanceof RenderableBattleController) {
             RenderableBattleController rbc = (RenderableBattleController) p1;
