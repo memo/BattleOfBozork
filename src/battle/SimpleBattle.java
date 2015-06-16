@@ -205,7 +205,7 @@ public class SimpleBattle {
 
         // check collision with trail
         if (s1.collisionWithTrail(s2, 0)) {
-            System.out.println("s1 HIT");
+            System.out.println("s2 HIT");
             s2.hit();
         }
 
