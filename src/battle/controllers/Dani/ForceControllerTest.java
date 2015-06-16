@@ -151,12 +151,12 @@ public class ForceControllerTest implements RenderableBattleController
         NeuroShip ship = gstate.getShip(myPlayerId);
 
         ff.clear();
-        ff.pointAttraction(enemyPos, 100, 0.5);
-        avoidBullets(gstate,10.0, 1);
-        ff.radialRepulsion(enemyPos, 130, 0.4);
-        followTail(gstate, 30.0, 1);
+        //ff.pointAttraction(enemyPos, 100, 0.5);
+        //avoidBullets(gstate,10.0, 1);
+        //ff.radialRepulsion(enemyPos, 130, 0.4);
+        //followTail(gstate, 30.0, 1);
         avoidTrail(gstate, enemy, 40, 1.0);
-        avoidAsteroids(gstate, 1.0);
+        //avoidAsteroids(gstate, 1.0);
         Vector2d rt = ff.headingAndForceAt(shipPos);
 
         return new Vector2d(rt.x,rt.y*0.1);

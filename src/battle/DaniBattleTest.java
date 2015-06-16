@@ -30,7 +30,8 @@ public class DaniBattleTest {
         BattleController fire1 = new ForceControllerTest();
         //BattleController fire2 = new MemoControllerRandom();
         //BattleController fire2 = new MMMCTS();
-        BattleController fire2 = new WASDController();
+        //BattleController fire2 = new WASDController();
+        BattleController fire2 = new MemoController1();
 
         battle.playGame(fire1, fire2, new Datalyzer());
     }
