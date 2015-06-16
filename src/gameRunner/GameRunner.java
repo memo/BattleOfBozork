@@ -22,7 +22,7 @@ public class GameRunner {
     private static ExecutorService threadPool;
     public String prefix = "runs/";
     private int NUMBER_OF_THREADS = 4;
-    private ArrayList<Callable<Object>> runnerThreads = new ArrayList<>();
+    private ArrayList<Callable<Object>> runnerThreads = new ArrayList<Callable<Object>>();
     private ArrayList<BattleController> controllers;
     private int gamesPerMatchup = 10;
 
@@ -41,7 +41,7 @@ public class GameRunner {
         if (args.length != 3) {
             System.out.println("Must have 3 arguments [threads|runs|filePrefix]");
         } else {
-            ArrayList<BattleController> controllers = new ArrayList<>();
+            ArrayList<BattleController> controllers = new ArrayList<BattleController>();
 //        controllers.add(new DaniController());
             controllers.add(new MemoController1());
             controllers.add(new RotateAndShoot());
