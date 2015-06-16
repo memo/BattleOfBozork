@@ -65,10 +65,10 @@ public class GameRunner {
         ArrayList<BattleController> controllers = new ArrayList<>();
         controllers.add(new DaniController());
         controllers.add(new MemoController1());
-        controllers.add(new RotateAndShoot());
+//        controllers.add(new RotateAndShoot());
 //        controllers.add(new PiersMCTS());
 
-        GameRunner runner = new GameRunner(3, controllers, 5);
+        GameRunner runner = new GameRunner(3, controllers, 100);
 
         runner.runTheGames();
 
