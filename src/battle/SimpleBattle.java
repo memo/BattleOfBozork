@@ -137,8 +137,9 @@ public class SimpleBattle {
             view.removeKeyListener((KeyListener) p2);
         }
 
-        if (datalyzer != null)
-            datalyzer.end(this, "data_test1");
+        if(datalyzer!=null)
+            datalyzer.end(this);
+
         return 0;
     }
 

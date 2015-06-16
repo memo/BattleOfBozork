@@ -12,6 +12,8 @@ import java.util.ArrayList;
  * Created by colormotor on 15/06/15.
  */
 
+/// TODO: optimize attenuation for dist^2?
+
 class ForceObj{
     public ForceObj()
     {
@@ -21,7 +23,13 @@ class ForceObj{
     public Vector2d getForceAt( Vector2d pos ) { return new Vector2d(0,0); }
     public void draw( Graphics2D g ) {}
 
+    static public Color attractColor = Color.green;
+    static public Color repulseColor = Color.red;
+    static public boolean normalize = true;
+    static public double multiplier = 200.0;
 }
+
+
 
 class RadialRepulsion extends ForceObj{
     Vector2d center;
@@ -39,17 +47,74 @@ class RadialRepulsion extends ForceObj{
     public Vector2d getForceAt( Vector2d pos )
     {
         Vector2d force = new Vector2d(0,0);
+        Vector2d d = Vector2d.subtract(pos, center);
 
-        return force;
+        double dist = d.mag();
+
+        if(normalize)
+        {
+            if(dist == 0.0)
+            {
+                // hack ..
+                return new Vector2d(radius, radius);
+            }
+
+            d.divide(dist);
+        }
+
+        d.multiply(Util.attenuation(dist, radius) * weight * multiplier);
+        return d;
     }
 
     @Override
     public void draw( Graphics2D g )
     {
-        g.setColor(Color.red);
+        g.setColor(ForceObj.repulseColor);
         Gfx.drawCircle(g, center, radius);
-        g.setColor(Color.red);
         Gfx.drawCircle(g, center, radius*weight);
+    }
+}
+
+class PointAttraction extends ForceObj{
+    public Vector2d center;
+    public double weight;
+    public double max;
+
+    public PointAttraction( Vector2d center, double max, double weight )
+    {
+        this.center = center;
+        this.weight = weight;
+        this.max = max;
+    }
+
+    @Override
+    public Vector2d getForceAt( Vector2d pos )
+    {
+        Vector2d zero = new Vector2d(0,0);
+
+        Vector2d d = Vector2d.subtract(center, pos);
+        double dist = d.mag();
+
+        if(dist == 0.0)
+            return zero;
+
+        if(dist > max)
+        {
+            d.multiply(max / dist);
+        }
+
+        if(normalize)
+            d.divide(dist);
+
+        d.multiply(weight * multiplier);
+        return d;
+    }
+
+    @Override
+    public void draw( Graphics2D g )
+    {
+        g.setColor(ForceObj.attractColor);
+        Gfx.drawCircle(g, center, 5.0);
     }
 }
 
@@ -68,17 +133,26 @@ class RadialAttraction extends ForceObj{
     @Override
     public Vector2d getForceAt( Vector2d pos )
     {
-        Vector2d force = new Vector2d(0,0);
+        Vector2d zero = new Vector2d(0,0);
 
-        return force;
+        Vector2d d = Vector2d.subtract(pos, center);
+        double dist = d.mag();
+
+        if(dist == 0.0)
+            return zero;
+
+        if(normalize)
+            d.divide(dist);
+
+        d.multiply((1.0 - Util.attenuation(dist, radius)) * weight  * multiplier);
+        return d;
     }
 
     @Override
     public void draw( Graphics2D g )
     {
-        g.setColor(Color.green);
+        g.setColor(ForceObj.attractColor);
         Gfx.drawCircle(g, center, radius);
-        g.setColor(Color.green);
         Gfx.drawCircle(g, center, radius*weight);
     }
 }
@@ -88,15 +162,26 @@ class SegmentAttraction extends ForceObj
     public Vector2d a;
     public Vector2d b;
     public double width;
+
     public double weight;
 
+    public boolean follow; // this flags indicates to follow the segment
+    public Vector2d forward; // in the direction of the vector a-b
 
-    SegmentAttraction( Vector2d a, Vector2d b, double width, double weight )
+    public SegmentAttraction( Vector2d a, Vector2d b, double width, double weight )
+    {
+        this(a, b, width, weight, false);
+    }
+
+    public SegmentAttraction( Vector2d a, Vector2d b, double width, double weight, boolean follow )
     {
         this.a = a;
         this.b = b;
         this.width = width;
         this.weight = weight;
+        this.follow = follow;
+        this.forward = Vector2d.subtract(a, b);
+        this.forward.normalise();
     }
 
     @Override
@@ -104,15 +189,103 @@ class SegmentAttraction extends ForceObj
     {
         Vector2d force = new Vector2d(0,0);
 
-        return force;
+        Vector2d segp = Util.closestPointOnSegment(pos, a, b);
+
+        double dist = segp.dist(pos);
+
+        if( follow && dist < width )
+        {
+
+            Vector2d target = Vector2d.add(segp,forward);
+            Vector2d d = Vector2d.subtract(target, pos);
+            if( normalize )
+                d.normalise();
+            d.multiply(weight);
+            return d;
+        }
+
+        Vector2d d = Vector2d.subtract(segp, pos);
+        if(normalize)
+            d.normalise();;
+
+        d.multiply(Util.attenuation(dist, width) * weight * multiplier );
+        return d;
     }
 
     @Override
     public void draw( Graphics2D g )
     {
+        g.setColor(ForceObj.attractColor);
+        Gfx.drawCapsule(g, a, b, width );
+        Gfx.drawCapsule(g, a, b, width*weight );
+
+        if(follow)
+        {
+            Gfx.drawArrow(g, b, a, 3);
+        }
+    }
+}
+
+class SegmentRepulsion extends ForceObj
+{
+    public Vector2d a;
+    public Vector2d b;
+    public double width;
+    public double weight;
+
+    public Vector2d forward;
+
+    SegmentRepulsion( Vector2d a, Vector2d b, double width, double weight )
+    {
+        this.a = a;
+        this.b = b;
+        this.width = width;
+        this.weight = weight;
+
+        this.forward = Vector2d.subtract(a, b);
+        this.forward.normalise();
+    }
+
+    @Override
+    public Vector2d getForceAt( Vector2d pos )
+    {
+        Vector2d force = new Vector2d(0,0);
+
+        Vector2d segp = Util.closestPointOnSegment(pos, a, b);
+
+        double dist = segp.dist(pos);
+
+        Vector2d d = Vector2d.subtract(pos, segp);
+
+        if(normalize)
+        {
+            if(dist == 0.0)
+            {
+                // hack ..
+                Vector2d dp = Util.perpendicular(forward);
+                dp.multiply(width);
+                return dp;
+            }
+
+            d.divide(dist);
+        }
+
+
+        d.multiply(Util.attenuation(dist, width) * weight  * multiplier);
+        return d;
+    }
+
+
+    @Override
+    public void draw( Graphics2D g )
+    {
+        g.setColor(ForceObj.repulseColor);
+        Gfx.drawCapsule(g, a, b, width );
+        Gfx.drawCapsule(g, a, b, width*weight );
 
     }
 }
+
 
 
 public class ForceField {
@@ -121,23 +294,33 @@ public class ForceField {
 
     public ForceField()
     {
+        forceObjs = new ArrayList<ForceObj>();
     }
 
-    void radialRepulsion( Vector2d center, double radius, double weight )
+    public void pointAttraction( Vector2d center, double max, double weight )
+    {   forceObjs.add( new PointAttraction(center, max, weight)); }
+
+    public void radialRepulsion( Vector2d center, double radius, double weight )
     {   forceObjs.add( new RadialRepulsion(center, radius, weight)); }
 
-    void radialAttraction( Vector2d center, double radius, double weight )
+    public void radialAttraction( Vector2d center, double radius, double weight )
     {   forceObjs.add( new RadialAttraction(center, radius, weight)); }
 
-    void segmentAttraction( Vector2d a, Vector2d b, double width, double weight )
+    public void segmentAttraction( Vector2d a, Vector2d b, double width, double weight )
     {   forceObjs.add( new SegmentAttraction(a, b, width, weight)); }
 
-    void clear()
+    public void segmentAttractionFollow( Vector2d a, Vector2d b, double width, double weight )
+    {   forceObjs.add( new SegmentAttraction(a, b, width, weight, true)); }
+
+    public void segmentRepulsion( Vector2d a, Vector2d b, double width, double weight )
+    {   forceObjs.add( new SegmentRepulsion(a, b, width, weight)); }
+
+    public void clear()
     {
         forceObjs.clear();
     }
 
-    Vector2d getForceAt( Vector2d pos )
+    public Vector2d getForceAt( Vector2d pos )
     {
         Vector2d f = new Vector2d(0, 0, true);
         // accumulate forces.
@@ -165,9 +348,9 @@ public class ForceField {
     {
         g.setColor(Color.gray);
 
-        for( int y = 0; y < width; y+=step )
+        for( int y = 0; y < height; y+=step )
         {
-            for( int x = 0; x < height; x+=step )
+            for( int x = 0; x < width; x+=step )
             {
                 Vector2d pos = new Vector2d((double)x, (double)y);
                 Vector2d to = Vector2d.add(pos, getForceAt(pos) );
