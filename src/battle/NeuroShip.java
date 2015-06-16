@@ -43,7 +43,7 @@ public class NeuroShip extends GameObject {
 
 
     // trail parameters
-    static int trail_length = 350;
+    static int trail_length = 300;
     static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
@@ -58,6 +58,12 @@ public class NeuroShip extends GameObject {
     int trail_index = 0;
     int trail_frame_counter = 0;
     int trail_emit_frame_count = 0;
+
+
+    // hit draw
+    int hit_draw_counter = 0;        // frame counter used for drawing hit indicator
+    static int hit_draw_num_frames = 15; // number of frames to draw hit
+    static int hit_draw_radius = 10;
 
     static public void setTrailLength(int n) {
         if (n < 1) n = 1;
@@ -157,11 +163,50 @@ public class NeuroShip extends GameObject {
         double rot = Math.atan2(d.y, d.x) + Math.PI / 2;
         g.rotate(rot);
         g.scale(scale, scale);
-        g.setColor(color);
-        g.fillPolygon(xp, yp, xp.length);
-        if (thrusting) {
-            g.setColor(Color.red);
-            g.fillPolygon(xpThrust, ypThrust, xpThrust.length);
+
+        boolean do_draw_ship = true;
+
+        if(hit_draw_counter > 0) {
+            hit_draw_counter--;
+
+   //         if(hit_draw_counter % 2 == 0) {
+               // do_draw_ship = false;
+
+                double t = hit_draw_counter / (double) hit_draw_num_frames;
+                // scale up explosion and down again with time
+                int hit_r = (int) (hit_draw_radius * Math.sin(t * Math.PI));
+                //g.fillOval(-hit_r, -hit_r, 2 * hit_r, 2 * hit_r);
+                int nPoints = 10;
+                int [] px = new int[nPoints];
+                int [] py = new int[nPoints];
+                double radialRange = 1.0;
+                for (int i = 0; i < nPoints; i++) {
+                    double theta = (Math.PI * 2 / nPoints) * (i + rand.nextDouble());
+                    double rad = hit_r * (1 - radialRange / 2 + rand.nextDouble() * radialRange);
+                    px[i] = (int) (rad * Math.cos(theta));
+                    py[i] = (int) (rad * Math.sin(theta));
+                }
+                g.setColor(Color.red);
+                g.fillPolygon(px, py, nPoints);
+
+                for (int i = 0; i < nPoints; i++) {
+                    double theta = (Math.PI * 2 / nPoints) * (i + rand.nextDouble());
+                    double rad = 0.5 * hit_r * (1 - radialRange / 2 + rand.nextDouble() * radialRange);
+                    px[i] = (int) (rad * Math.cos(theta));
+                    py[i] = (int) (rad * Math.sin(theta));
+                }
+                g.setColor(Color.yellow);
+                g.fillPolygon(px, py, nPoints);
+ //           }
+        }
+
+        if(do_draw_ship) {
+            g.setColor(color);
+            g.fillPolygon(xp, yp, xp.length);
+            if (thrusting) {
+                g.setColor(Color.red);
+                g.fillPolygon(xpThrust, ypThrust, xpThrust.length);
+            }
         }
         g.setTransform(at);
 
@@ -176,6 +221,7 @@ public class NeuroShip extends GameObject {
         //dead = true;
         // sounds.play(sounds.bangLarge);
         // do nothing
+        hit_draw_counter = hit_draw_num_frames;
     }
 
     public boolean dead() {
