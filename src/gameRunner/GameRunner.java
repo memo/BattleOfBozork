@@ -3,11 +3,8 @@ package gameRunner;
 import analytics.Datalyzer;
 import battle.BattleController;
 import battle.SimpleBattle;
-import battle.controllers.Dani.DaniController;
 import battle.controllers.Memo.MemoController1;
-import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -23,6 +20,7 @@ public class GameRunner {
 
 
     private static ExecutorService threadPool;
+    public String prefix = "runs/";
     private int NUMBER_OF_THREADS = 4;
     private ArrayList<Callable<Object>> runnerThreads = new ArrayList<>();
     private ArrayList<BattleController> controllers;
@@ -32,8 +30,26 @@ public class GameRunner {
         this.NUMBER_OF_THREADS = numberOfThreads;
         this.controllers = controllers;
         this.gamesPerMatchup = gamesPerMatchup;
-        if(threadPool == null){
+        if (threadPool == null) {
             threadPool = Executors.newFixedThreadPool(numberOfThreads);
+        }
+    }
+
+    // First argument is the threads, Second argument is the runs per matchup
+    // third is the file pre-fix
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.out.println("Must have 3 arguments [threads|runs|filePrefix]");
+        } else {
+            ArrayList<BattleController> controllers = new ArrayList<>();
+//        controllers.add(new DaniController());
+            controllers.add(new MemoController1());
+            controllers.add(new RotateAndShoot());
+//        controllers.add(new PiersMCTS());
+
+            GameRunner runner = new GameRunner(Integer.parseInt(args[0]), controllers, Integer.parseInt(args[1]));
+            runner.prefix = args[2];
+            runner.runTheGames();
         }
     }
 
@@ -42,11 +58,11 @@ public class GameRunner {
         battle.DO_FLUID = false;
         battle.reset();
 
-        for(BattleController p1 : controllers){
-            for(BattleController p2 : controllers){
-                if(p1 != p2){
-                    for(int i = 0; i < gamesPerMatchup; i++) {
-                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, p1.getClass().getSimpleName() + "-" + p2.getClass().getSimpleName() + "-" + i));
+        for (BattleController p1 : controllers) {
+            for (BattleController p2 : controllers) {
+                if (p1 != p2) {
+                    for (int i = 0; i < gamesPerMatchup; i++) {
+                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, prefix + p1.getClass().getSimpleName() + "-" + p2.getClass().getSimpleName() + "-" + i));
                     }
                 }
             }
@@ -59,18 +75,6 @@ public class GameRunner {
         }
 
         threadPool.shutdown();
-    }
-
-    public static void main(String[] args) {
-        ArrayList<BattleController> controllers = new ArrayList<>();
-//        controllers.add(new DaniController());
-        controllers.add(new MemoController1());
-        controllers.add(new RotateAndShoot());
-//        controllers.add(new PiersMCTS());
-
-        GameRunner runner = new GameRunner(3, controllers, 100);
-
-        runner.runTheGames();
     }
 
 }
@@ -92,7 +96,7 @@ class GameRunnerWrapper implements Callable<Object> {
     public Object call() throws Exception {
         try {
             game.playGame(p1, p2, new Datalyzer(name));
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Finished: " + name);
