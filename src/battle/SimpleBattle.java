@@ -295,11 +295,7 @@ public class SimpleBattle {
             for (GameObject ob : objects) {
                 if (!(ob instanceof Missile)) {
                     if (overlap(actor, ob)) {
-                        if (ob instanceof NeuroShip) {
-                            int playerID = (ob == s1 ? 0 : 1);
-                            this.stats.get(playerID).nPoints -= pointsPerEnemyKill;
-                            this.stats.get(playerID == 0 ? 1 : 0).nPoints += pointsPerEnemyKill;
-                        }else if(ob instanceof Asteroid){
+                        if(ob instanceof Asteroid){
                             // argh, missiles don't know who we give the points to :(
                         }
                         actor.hit();
@@ -313,7 +309,7 @@ public class SimpleBattle {
             for (GameObject ob : objects) {
                 if (overlap(actor, ob)) {
                     // the object is hit, and the actor is also
-                    int playerID = (actor == s1 ? 1 : 0);
+                    int playerID = (actor == s1 ? 0 : 1);
                     if (ob instanceof Missile) {
                         // good to hit a ship though
                         this.stats.get(playerID == 0 ? 1 : 0).nPoints += pointsPerEnemyKill;

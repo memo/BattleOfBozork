@@ -47,6 +47,7 @@ public class PiersMCTS implements BattleController {
 
         if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) {
             currentBestAction = new MacroAction(root.getBestAction());
+            root = null;
         }
         return action;
     }
