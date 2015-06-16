@@ -32,7 +32,7 @@ public class GameRunner {
         this.controllers = controllers;
         this.gamesPerMatchup = gamesPerMatchup;
         if(threadPool == null){
-            threadPool = Executors.newCachedThreadPool();
+            threadPool = Executors.newFixedThreadPool(numberOfThreads);
         }
     }
 
@@ -55,6 +55,8 @@ public class GameRunner {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        threadPool.shutdown();
     }
 
     public static void main(String[] args) {
@@ -64,9 +66,10 @@ public class GameRunner {
         controllers.add(new RotateAndShoot());
 //        controllers.add(new PiersMCTS());
 
-        GameRunner runner = new GameRunner(4, controllers, 5);
+        GameRunner runner = new GameRunner(3, controllers, 5);
 
         runner.runTheGames();
+
     }
 
 }
