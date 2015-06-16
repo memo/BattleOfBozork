@@ -7,7 +7,7 @@ import asteroids.GameState;
 import asteroids.GameObject;
 import asteroids.Ship;
 import battle.RenderableBattleController;
-import battle.BattleMissile;
+import asteroids.Missile;
 import battle.NeuroShip;
 import battle.SimpleBattle;
 import asteroids.Missile;
@@ -168,10 +168,10 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         Vector2d followPos = Util.closestPointOnSegment(shipPos, followPoint1, followPoint2);
 
         ff.clear();
-        ff.pointAttraction(followPos, 5.0, 0.3); // was enemyPos
+        ff.pointAttraction(followPos, 5.0, 0.7); // was enemyPos
         avoidBullets(gstate,10.0, 0.4);
-        ff.radialRepulsion(enemyPos, 90, 0.2);
-        followTail(gstate, 30.0, 1.8);
+        ff.radialRepulsion(enemyPos, 40, 0.2);
+        //followTail(gstate, 30.0, 1.8);
         avoidTrail(gstate, enemy, 30, 0.4);
         avoidAsteroids(gstate, 0.6);
         Vector2d rt = ff.headingAndForceAt(shipPos);
@@ -249,11 +249,6 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         AffineTransform at = g.getTransform();
 
         ff.draw(g, size.width, size.height, 50);
-
-        for( Vector2d v : foo )
-        {
-            Gfx.drawCircle(g, v, 14);
-        }
     }
 
 }
