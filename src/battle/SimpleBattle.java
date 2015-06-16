@@ -44,6 +44,7 @@ public class SimpleBattle {
     static int damageMissileHit = 1;
     static int damageAsteroidHit = 10;
     static int damageTrailHit = 20;
+    static boolean damageOwnTrail = false;
     static double trail_bounce_factor = 1.5;
     static double object_max_speed = 50;
 
@@ -222,6 +223,21 @@ public class SimpleBattle {
             //System.out.println("s1 hit trail of s2");
             this.stats.get(0).nPoints -= damageTrailHit;
             s1.hit();
+        }
+
+        if(damageOwnTrail) {
+            // check collision with trail
+            if (s2.collisionWithTrail(s2, trail_bounce_factor)) {
+                //System.out.println("s2 hit trail of s2");
+                this.stats.get(1).nPoints -= damageTrailHit;
+                s2.hit();
+            }
+
+            if (s1.collisionWithTrail(s1, trail_bounce_factor)) {
+                //System.out.println("s1 hit trail of s1");
+                this.stats.get(0).nPoints -= damageTrailHit;
+                s1.hit();
+            }
         }
 
         if(this.stats.get(0).nPoints <=0) s1.kill();
