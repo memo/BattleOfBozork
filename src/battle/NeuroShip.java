@@ -86,10 +86,17 @@ public class NeuroShip extends GameObject {
         }
     }
 
+
+    private Vector2d[] cloneVector2dArray(Vector2d[] v, boolean mutable) {
+        Vector2d[] ret = new Vector2d[v.length];
+        for(int i=0; i<ret.length; i++) ret[i] = new Vector2d(v[i], mutable);
+        return ret;
+    }
+
     public NeuroShip copy() {
         NeuroShip ship = new NeuroShip(s, v, d, playerID);
-        ship.trail_pos = trail_pos.clone();
-        ship.trail_vel = trail_vel.clone();
+        ship.trail_pos = cloneVector2dArray(trail_pos, true);
+        ship.trail_vel = cloneVector2dArray(trail_vel, true);
         ship.trail_index = trail_index;
         ship.trail_collision_step_count = 10;//trail_collision_step_count;
 
