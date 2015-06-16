@@ -131,7 +131,10 @@ public class BetterMCTSNode {
         while (maxDepth > currentRolloutDepth && !state.isGameOver()) {
             Action first = allActions[random.nextInt(allActions.length)];
             Action second = allActions[random.nextInt(allActions.length)];
-            state.update(first, second);
+            for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+                state.update(first, second);
+            }
+            currentRolloutDepth++;
         }
         int missilesUsed = 100 - state.getMissilesLeft(playerID);
         int ourPoints = state.getPoints(playerID);

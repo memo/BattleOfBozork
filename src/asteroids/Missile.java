@@ -4,16 +4,22 @@ import math.Vector2d;
 
 import java.awt.*;
 
-import static asteroids.Constants.*;
+import static asteroids.Constants.missileTTL;
 
 public class Missile extends GameObject {
 
     int ttl;
+    int playerID = -1;
 
     public Missile(Vector2d s, Vector2d v) {
         super(s, v);
         ttl = missileTTL;
         r = 6;
+    }
+
+    public Missile(Vector2d s, Vector2d v, int playerID) {
+        this(s, v);
+        this.playerID = playerID;
     }
 
     @Override
@@ -47,6 +53,10 @@ public class Missile extends GameObject {
     public void hit() {
         // kill it by setting ttl to zero
         ttl = 0;
+    }
+
+    public int getPlayerID() {
+        return playerID;
     }
 
     public String toString() {
