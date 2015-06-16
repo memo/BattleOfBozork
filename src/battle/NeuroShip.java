@@ -2,6 +2,7 @@ package battle;
 
 import asteroids.*;
 import math.Vector2d;
+import utilities.DoubleWithRange;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -43,23 +44,24 @@ public class NeuroShip extends GameObject {
 
 
     // trail parameters
+ //   static DoubleWithRange trail_length = new DoubleWithRange(200, 0, 500);
+   // static DoubleWithRange trail_momentum = new DoubleWithRange(0.985, 0.9, )
     static int trail_length = 200;
     static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
-
     static int trail_min_segment_length = 0;
 
     // trail vars
     static boolean trail_enabled = true;
     static int trail_length_max = 1000;
+
     Vector2d[] trail_pos = new Vector2d[trail_length_max];
     Vector2d[] trail_vel = new Vector2d[trail_length_max];
     int trail_index = 0;
     int trail_frame_counter = 0;
     int trail_emit_frame_count = 0;
-
 
     // hit draw
     int hit_draw_counter = 0;        // frame counter used for drawing hit indicator
@@ -88,7 +90,9 @@ public class NeuroShip extends GameObject {
 
     public NeuroShip copy() {
         NeuroShip ship = new NeuroShip(s, v, d, playerID);
-        ship.trail_emit_frame_count = 5;
+        ship.trail_pos = trail_pos.clone();
+        ship.trail_vel = trail_vel.clone();
+//        ship.trail_emit_frame_count = 5;
         ship.releaseVelocity = releaseVelocity;
         return ship;
     }

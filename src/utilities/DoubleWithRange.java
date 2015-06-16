@@ -5,15 +5,28 @@ package utilities;
  */
 public class DoubleWithRange {
     public double value;
+    public double default_value;
     public Range range;
+    public String name;
 
-    public DoubleWithRange(double value, double min, double max) {
+
+    public DoubleWithRange(String name, double value, double min, double max) {
+        this.name = name;
         this.value = value;
+        this.default_value = value;
         range = new Range(min, max);
     }
 
     public void randomize() {
         this.value = Math.random() * (range.max - range.min) + range.min;
+    }
+
+    public void reset() {
+        this.value = this.default_value;
+    }
+
+    public String toString() {
+        return name + " : " + value;
     }
 
 }
