@@ -32,4 +32,12 @@ public class Gfx {
         drawLine(g, Vector2d.add(d, perp), b);
     }
 
+    public static void drawCapsule( Graphics2D g, Vector2d a, Vector2d b, double width )
+    {
+        drawLine(g, a, b);
+        drawCircle(g, a, width);
+        drawCircle(g, b, width);
+        // TODO connect
+    }
+
 }
