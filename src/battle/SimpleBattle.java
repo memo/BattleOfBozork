@@ -74,6 +74,8 @@ public class SimpleBattle {
         params.add("trail_length", 200, 0, NeuroShip.trail_length_max);
         params.add("trail_momentum", 0.985, 0.9, 1.0);
         params.add("ship_momentum", 0.997, 0.9, 1.0);
+        params.add("num_asteroids", 10, 5, 50);
+        params.add("missile_ttl", 60, 30, 200);
     }
 
     public void randomizeParams() {
@@ -132,7 +134,7 @@ public class SimpleBattle {
         this.p1 = p1;
         this.p2 = p2;
         reset();
-        makeAsteroids(numberOfAsteroids);
+        makeAsteroids(params.getInt("num_asteroids"));
         stats.add(new PlayerStats(0, startHealth));
         stats.add(new PlayerStats(0, startHealth));
 
@@ -151,9 +153,11 @@ public class SimpleBattle {
             view.requestFocus();
         }
 
+        System.out.println("Start game...");
         while (!isGameOver()) {
             update(datalyzer);
         }
+        System.out.println("Game over.");
 
         if (p1 instanceof KeyListener) {
             view.removeKeyListener((KeyListener) p1);
@@ -327,6 +331,7 @@ public class SimpleBattle {
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
+        state.params = params;
         return state;
     }
 
@@ -409,7 +414,7 @@ public class SimpleBattle {
         NeuroShip currentShip = playerId == 0 ? s1 : s2;
         PlayerStats stats = this.stats.get(playerId);
         if (stats.nMissiles < nMissiles) {
-            Missile m = new Missile(s, new Vector2d(0, 0, true), playerId);
+            Missile m = new Missile(params.getInt("missile_ttl"), s, new Vector2d(0, 0, true), playerId);
             m.v.add(d, releaseVelocity);
             // make it clear the ship
             m.s.add(m.v, (currentShip.r() + missileRadius) * 1.5 / m.v.mag());
