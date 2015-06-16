@@ -2,6 +2,11 @@ package gameRunner;
 
 import battle.BattleController;
 import battle.SimpleBattle;
+import battle.controllers.Dani.DaniController;
+import battle.controllers.Memo.MemoController1;
+import battle.controllers.Piers.PiersMCTS;
+import battle.controllers.RotateAndShoot;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -18,7 +23,7 @@ public class GameRunner {
 
     private static ExecutorService threadPool;
     private int NUMBER_OF_THREADS = 4;
-    private ArrayList<Callable<Object>> runnerThreads;
+    private ArrayList<Callable<Object>> runnerThreads = new ArrayList<>();
     private ArrayList<BattleController> controllers;
     private int gamesPerMatchup = 10;
 
@@ -32,13 +37,19 @@ public class GameRunner {
     }
 
     public void runTheGames() {
+        SimpleBattle battle = new SimpleBattle(false);
+        battle.reset();
+
         for(BattleController p1 : controllers){
             for(BattleController p2 : controllers){
                 if(p1 != p2){
-                    runnerThreads.add(new GameRunnerWrapper(new SimpleBattle(false), p1, p2));
+                    for(int i = 0; i < gamesPerMatchup; i++) {
+                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2));
+                    }
                 }
             }
         }
+        System.out.println("Starting the games");
         try {
             threadPool.invokeAll(runnerThreads);
         } catch (InterruptedException e) {
@@ -47,7 +58,15 @@ public class GameRunner {
     }
 
     public static void main(String[] args) {
+        ArrayList<BattleController> controllers = new ArrayList<>();
+        controllers.add(new DaniController());
+        controllers.add(new MemoController1());
+        controllers.add(new RotateAndShoot());
+//        controllers.add(new PiersMCTS());
 
+        GameRunner runner = new GameRunner(4, controllers, 5);
+
+        runner.runTheGames();
     }
 
 }
@@ -66,6 +85,7 @@ class GameRunnerWrapper implements Callable<Object> {
     @Override
     public Object call() throws Exception {
         game.playGame(p1, p2);
+        System.out.println("Finished: " + p1.getClass().getSimpleName() + " Vs " + p2.getClass().getSimpleName());
         return null;
     }
 }
