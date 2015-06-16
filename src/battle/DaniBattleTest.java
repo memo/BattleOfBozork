@@ -28,13 +28,18 @@ public class DaniBattleTest {
 
         SimpleBattle battle = new SimpleBattle();
 
-        BattleController fire1 = new ForceControllerTest();
-        //BattleController fire2 = new MemoControllerRandom();
-        //BattleController fire2 = new MMMCTS();
-        //BattleController fire2 = new WASDController();
-        BattleController fire2 = new PiersMCTS();
+        for( int i = 0; i < 10; i++ )
+        {
+            BattleController fire1 = new ForceControllerTest();
+            //BattleController fire2 = new MemoControllerRandom();
+            //BattleController fire2 = new MMMCTS();
+            //BattleController fire1 = new WASDController();
+            BattleController fire2 = new ForceControllerTest();
 
-        battle.playGame(fire1, fire2, new Datalyzer());
+            battle.playGame(fire1, fire2, new Datalyzer("Game_"+i));
+        }
+
+
     }
 
 }

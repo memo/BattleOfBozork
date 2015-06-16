@@ -35,7 +35,7 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
 
     Action action;
 
-    double viewRadius = 40.0;
+    double viewRadius = 400;
     double thrustAmt = 1.5;
     double rotAmt = 1.5;
     int shotWait = 0;
@@ -43,7 +43,7 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
 
     boolean anyMissiles = false;
 
-    boolean debugDraw = true; // Use V key to toggle
+    boolean debugDraw = false; // Use V key to toggle
 
     ArrayList<Vector2d> foo = new ArrayList<Vector2d>();
 
@@ -67,16 +67,23 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         Vector2d enemyPos = new Vector2d(enemy.s);
         Vector2d thisPos = new Vector2d(ship.s);
         double l = enemyPos.dist(thisPos);
-        Vector2d tp = new Vector2d();
-
-        Vector2d d = new Vector2d(ship.d, true);
-        d.normalise();;
-        tp.x = thisPos.x + d.x * l;
-        tp.y = thisPos.y + d.y * l;
-
-        if( tp.dist(enemyPos) <= viewRadius)
+        Vector2d d = Vector2d.subtract(enemyPos, thisPos);
+        d.normalise();
+        if(Util.dot(d, ship.d) > 0.7 &&
+            l < viewRadius)
             return true;
         return false;
+//
+//        Vector2d tp = new Vector2d();
+//
+//        Vector2d d = new Vector2d(ship.d, true);
+//        d.normalise();;
+//        tp.x = thisPos.x + d.x * l;
+//        tp.y = thisPos.y + d.y * l;
+//
+//        if( tp.dist(enemyPos) <= viewRadius)
+//            return true;
+//        return false;
     }
 
     ArrayList<Missile> getMissiles(SimpleBattle gstate)
@@ -168,12 +175,12 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         Vector2d followPos = Util.closestPointOnSegment(shipPos, followPoint1, followPoint2);
 
         ff.clear();
-        ff.pointAttraction(followPos, 5.0, 0.7); // was enemyPos
+        ff.pointAttraction(followPos, 5.0, 0.3); // was enemyPos
         avoidBullets(gstate,10.0, 0.4);
-        ff.radialRepulsion(enemyPos, 40, 0.2);
+        ff.radialRepulsion(enemyPos, 40, 0.1);
         //followTail(gstate, 30.0, 1.8);
-        avoidTrail(gstate, enemy, 30, 0.4);
-        avoidAsteroids(gstate, 0.6);
+        avoidTrail(gstate, enemy, 30, 1.5);
+        avoidAsteroids(gstate, 0.9);
         Vector2d rt = ff.headingAndForceAt(shipPos);
 
         return new Vector2d(rt.x,rt.y*0.1);
