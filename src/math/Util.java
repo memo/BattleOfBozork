@@ -51,9 +51,21 @@ public class Util {
         return p.dist( closestPointOnSegment(p,a,b) );
     }
 
+    public static Vector2d perpendicular( Vector2d v )
+    {
+        return new Vector2d(-v.y, v.x);
+    }
+
     public static int boolToInt( boolean v )
     {
         return (v)?1:0;
     }
+
+    public static double attenuation( double x, double distance )
+    {
+        return Math.min(1.0 / ((x * x) / distance), 1.0);
+    }
+
+
 
 }
