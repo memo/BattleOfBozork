@@ -43,7 +43,7 @@ public class NeuroShip extends GameObject {
 
 
     // trail parameters
-    static int trail_length = 50;
+    static int trail_length = 200;
     static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
@@ -214,18 +214,18 @@ public class NeuroShip extends GameObject {
     private void updateTrail() {
         if (!trail_enabled) return;
 
+        if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
+        int real_trail_length = trail_length / trail_emit_frame_count;
         if(trail_frame_counter % trail_emit_frame_count == 0) {
-        trail_index = trail_index % trail_length;
-        trail_pos[trail_index].x = s.x;
-        trail_pos[trail_index].y = s.y;
-        trail_vel[trail_index].x = v.x;
-        trail_vel[trail_index].y = v.y;
-
-            trail_index = (trail_index + 1) % trail_length;
+            trail_index = trail_index % real_trail_length;
+            trail_pos[trail_index].x = s.x;
+            trail_pos[trail_index].y = s.y;
+            trail_vel[trail_index].x = v.x;
+            trail_vel[trail_index].y = v.y;
+            trail_index = (trail_index + 1) % real_trail_length;
         }
 
-
-        for (int i = 0; i < trail_length; i++) {
+        for (int i = 0; i < real_trail_length; i++) {
             trail_vel[i].multiply(trail_momentum);
             trail_pos[i].add(trail_vel[i]);
         }
@@ -235,10 +235,12 @@ public class NeuroShip extends GameObject {
     private void drawTrail(Graphics2D g) {
         if (!trail_enabled) return;
 
-        int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
+        if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
+        int real_trail_length = trail_length / trail_emit_frame_count;
+        int trail_end_index = trail_close_loop ? real_trail_length : real_trail_length - 1;
         for (int i = 0; i < trail_end_index; i++) {
-            int i1 = (i + trail_index) % trail_length;
-            int i2 = (i1 + 1) % trail_length;
+            int i1 = (i + trail_index) % real_trail_length;
+            int i2 = (i1 + 1) % real_trail_length;
             Vector2d p1 = trail_pos[i1];
             Vector2d p2 = trail_pos[i2];
             boolean doDraw = true;
@@ -253,11 +255,13 @@ public class NeuroShip extends GameObject {
     public boolean collisionWithTrail(GameObject o, float bounce_factor) {
         if (!trail_enabled) return false;
 
-        int trail_end_index = trail_close_loop ? trail_length : trail_length - 1;
+        if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
+        int real_trail_length = trail_length / trail_emit_frame_count;
+        int trail_end_index = trail_close_loop ? real_trail_length : real_trail_length - 1;
         double dist_thresh2 = o.r * o.r;
         for (int i = 0; i < trail_end_index; i++) {
-            int i1 = (i + trail_index) % trail_length;
-            int i2 = (i1 + 1) % trail_length;
+            int i1 = (i + trail_index) % real_trail_length;
+            int i2 = (i1 + 1) % real_trail_length;
             Vector2d p1 = trail_pos[i1];
             Vector2d p2 = trail_pos[i2];
             boolean doDraw = true;
