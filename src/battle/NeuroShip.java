@@ -218,11 +218,16 @@ public class NeuroShip extends GameObject {
         // super.hit();
         // System.out.println("Ship destroyed");
 
-        //dead = true;
+
         // sounds.play(sounds.bangLarge);
-        // do nothing
         hit_draw_counter = hit_draw_num_frames;
     }
+
+    public void kill() {
+        dead = true;
+    }
+
+
 
     public boolean dead() {
         return dead;

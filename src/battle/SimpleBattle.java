@@ -224,6 +224,9 @@ public class SimpleBattle {
             s1.hit();
         }
 
+        if(this.stats.get(0).nPoints <=0) s1.kill();
+        if(this.stats.get(1).nPoints <=0) s2.kill();
+
         // and fire any missiles as necessary
         if (a1.shoot) fireMissile(s1.s, s1.d, 0);
         if (a2.shoot) fireMissile(s2.s, s2.d, 1);
