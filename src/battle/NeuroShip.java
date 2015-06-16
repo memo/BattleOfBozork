@@ -43,7 +43,7 @@ public class NeuroShip extends GameObject {
 
 
     // trail parameters
-    static int trail_length = 200;
+    static int trail_length = 300;
     static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
@@ -253,7 +253,7 @@ public class NeuroShip extends GameObject {
     }
 
 
-    public boolean collisionWithTrail(GameObject o, float bounce_factor) {
+    public boolean collisionWithTrail(GameObject o, double bounce_factor) {
         if (!trail_enabled) return false;
 
         if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
@@ -287,10 +287,11 @@ public class NeuroShip extends GameObject {
 
                         // velocty perpendicular component = vel - vel_edge
                         Vector2d vel_perp = Vector2d.subtract(o.v, vel_edge);
+                        o.s.subtract(vel_perp);
                         vel_perp.multiply(-bounce_factor);
 
                         o.v = Vector2d.add(vel_perp, vel_edge);
-                        o.s.add(vel_perp);
+
 
                     }
                     return true;
