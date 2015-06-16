@@ -1,10 +1,7 @@
 package battle;
 
 import analytics.Datalyzer;
-import asteroids.Action;
-import asteroids.Constants;
-import asteroids.GameObject;
-import asteroids.Missile;
+import asteroids.*;
 import math.Vector2d;
 import msafluid.MSAFluidSolver2D;
 import utilities.JEasyFrame;
@@ -72,8 +69,8 @@ public class SimpleBattle {
     }
 
     public SimpleBattle(boolean visible) {
-        this.objects = new ArrayList<>();
-        this.stats = new ArrayList<>();
+        this.objects = new ArrayList<GameObject>();
+        this.stats = new ArrayList<PlayerStats>();
         this.visible = visible;
 
         if (visible) {
@@ -465,7 +462,7 @@ public class SimpleBattle {
     }
 
     public ArrayList<GameObject> getObjects() {
-        return new ArrayList<>(objects);
+        return new ArrayList<GameObject>(objects);
     }
 
     public int getPoints(int playerID) {
@@ -504,7 +501,7 @@ public class SimpleBattle {
 
     // Only call this after making the ships for the safety code to work
     private void makeAsteroids(int numberOfAsteroids) {
-        ArrayList<GameObject> createdAsteroids = new ArrayList<>(numberOfAsteroids);
+        ArrayList<GameObject> createdAsteroids = new ArrayList<GameObject>(numberOfAsteroids);
         double safeRadius = height / 20;
         while (createdAsteroids.size() < numberOfAsteroids) {
             Vector2d randomPosition = Vector2d.getRandomCartesian(width, height, true);

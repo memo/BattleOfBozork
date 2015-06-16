@@ -70,7 +70,7 @@ public class LiveList {
 
         // now purge any dead objects
         // add all live objects to the pending list
-        List<GameObject> pending = new ArrayList<>();
+        List<GameObject> pending = new ArrayList<GameObject>();
         // System.out.println(nObjects + " ==? " + objects.size());
         for (GameObject ob : objects) {
             if (!ob.dead()) {

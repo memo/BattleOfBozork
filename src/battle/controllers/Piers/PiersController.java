@@ -44,7 +44,7 @@ public class PiersController implements BattleController {
 
         SimpleBattle battle = new SimpleBattle();
 
-        ArrayList<PiersController> candidates = new ArrayList<>(POPULATION_COUNT);
+        ArrayList<PiersController> candidates = new ArrayList<PiersController>(POPULATION_COUNT);
         for (int i = 0; i < POPULATION_COUNT; i++) candidates.add(new PiersController());
 
         // Run the GA?
