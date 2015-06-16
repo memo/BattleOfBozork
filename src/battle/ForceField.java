@@ -25,8 +25,8 @@ class ForceObj{
 
     static public Color attractColor = Color.green;
     static public Color repulseColor = Color.red;
-    static public boolean normalize = true;
-    static public double multiplier = 200.0; // This will define the magnitude
+    static public boolean normalize = false;
+    static public double multiplier = 4.0; // This will define the magnitude
 }
 
 
@@ -291,6 +291,7 @@ class SegmentRepulsion extends ForceObj
 public class ForceField {
 
     public ArrayList<ForceObj> forceObjs;
+    public double maxForce = 100.0;
 
     public ForceField()
     {
@@ -323,14 +324,20 @@ public class ForceField {
     public Vector2d getForceAt( Vector2d pos )
     {
         Vector2d f = new Vector2d(0, 0, true);
+        Vector2d v = new Vector2d(0,0);
         // accumulate forces.
         for( int i = 0; i < forceObjs.size(); i++ )
-            f.add(forceObjs.get(i).getForceAt(pos));
-
+        {
+            ForceObj obj = forceObjs.get(i);
+            if( obj != null ) {
+                v = obj.getForceAt(pos);
+                f.add(v);//forceObjs.get(i).getForceAt(pos));
+            }
+        }
         return f;
     }
 
-    public Vector2d rotThrustAt( Vector2d pos )
+    public Vector2d headingAndForceAt( Vector2d pos )
     {
         Vector2d rt = new Vector2d(0,0);
 
@@ -341,12 +348,15 @@ public class ForceField {
         if( mag > 0.0 )
             f = Vector2d.divide(f, mag);
 
+        if( mag > maxForce )
+            mag = maxForce;
+
         return new Vector2d(Util.heading(f), mag);
     }
 
     public void draw( Graphics2D g, int width, int height, int step )
     {
-        g.setColor(Color.gray);
+        g.setColor(Color.darkGray);//Color(0.1f,0.1f,0.1f));
 
         for( int y = 0; y < height; y+=step )
         {
@@ -359,8 +369,15 @@ public class ForceField {
         }
 
         // draw objects
-        for( int i = 0; i < forceObjs.size(); i++ )
-            forceObjs.get(i).draw(g);
+        try {
+            for (int i = 0; i < forceObjs.size(); i++)
+                if(forceObjs.get(i) != null)
+                    forceObjs.get(i).draw(g);
+        }
+        catch( java.lang.NullPointerException e )
+        {
+            System.out.println("Cazzo");
+        }
     }
 }
 

@@ -43,12 +43,13 @@ public class NeuroShip extends GameObject {
 
 
     // trail parameters
-    static int trail_length = 300;
+    static int trail_length = 200;
     static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
-    static int trail_collision_dist = 10;
+
+    static int trail_min_segment_length = 0;
 
     // trail vars
     static boolean trail_enabled = true;
@@ -239,7 +240,7 @@ public class NeuroShip extends GameObject {
 
         if(trail_emit_frame_count == 0) trail_emit_frame_count = 1;
         int real_trail_length = trail_length / trail_emit_frame_count;
-        if(trail_frame_counter % trail_emit_frame_count == 0) {
+        if(trail_frame_counter % trail_emit_frame_count == 0 && s.distSquared(getTrailPoint(-1)) > trail_min_segment_length * trail_min_segment_length) {
             trail_index = trail_index % real_trail_length;
             trail_pos[trail_index].x = s.x;
             trail_pos[trail_index].y = s.y;
@@ -274,6 +275,13 @@ public class NeuroShip extends GameObject {
         }
     }
 
+    public int getTrailLength() { return trail_length; }
+
+
+    public Vector2d getTrailPoint(int i)
+    {
+        return trail_pos[(trail_index + i + trail_length) % trail_length];
+    }
 
     public boolean collisionWithTrail(GameObject o, double bounce_factor) {
         if (!trail_enabled) return false;

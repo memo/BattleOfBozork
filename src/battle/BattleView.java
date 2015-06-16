@@ -57,9 +57,13 @@ public class BattleView extends JComponent {
 
 
     public void paintState(Graphics2D g) {
-
-        for (GameObject object : game.objects) {
-            object.draw(g);
+        try {
+            for (GameObject object : game.objects) {
+                object.draw(g);
+            }
+        }
+        catch (java.util.ConcurrentModificationException e)
+        {
         }
 
         g.setColor(Color.white);
