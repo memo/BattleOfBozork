@@ -43,13 +43,13 @@ public class NeuroShip extends GameObject {
     int playerID;
 
 
+    // trail tweakable parameters
+    int trail_length = 200;
+    double trail_momentum = 0.985;
+
     // trail parameters
     static boolean trail_enabled = true;
     static int trail_length_max = 500;
-    static DoubleWithRange trail_length = new DoubleWithRange("trail_length", 200, 0, trail_length_max);
-    static DoubleWithRange trail_momentum = new DoubleWithRange("trail_momentum", 0.985, 0.9, 1.0);
-  //  static int trail_length = 200;
-   // static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
     static boolean trail_close_loop = false;
@@ -66,19 +66,20 @@ public class NeuroShip extends GameObject {
     static int hit_draw_num_frames = 15; // number of frames to draw hit
     static int hit_draw_radius = 10;
 
+    /*
     static public void setTrailLength(int n) {
         if (n < 1) n = 1;
         else if (n >= trail_length_max - 1) n = trail_length_max - 1;
         trail_length.value = n;
     }
-
+*/
 
     public NeuroShip(Vector2d s, Vector2d v, Vector2d d, int playerID) {
         super(new Vector2d(s, true), new Vector2d(v, true));
         this.d = new Vector2d(d, true);
         this.playerID = playerID;
 
-        setTrailLength(trail_length.getInt());
+        //setTrailLength(trail_length.getInt());
         for (int i = 0; i < trail_length_max; i++) {
             trail_pos[i] = new Vector2d(s.x, s.y, true);
             trail_vel[i] = new Vector2d(0, 0, true);
@@ -234,38 +235,36 @@ public class NeuroShip extends GameObject {
     }
 
 
-    public int getTrailLength() { return trail_length.getInt(); }
+    public int getTrailLength() { return trail_length; }
 
 
     public Vector2d getTrailPoint(int i)
     {
-        if(i<0) i+= trail_length.getInt();
-        return trail_pos[(trail_index + i) % trail_length.getInt()];
+        if(i<0) i+= trail_length;
+        return trail_pos[(trail_index + i) % trail_length];
     }
 
     private void updateTrail() {
         if (!trail_enabled) return;
 
-        int i_trail_length = trail_length.getInt();
-        trail_index = trail_index % i_trail_length;
+        trail_index = trail_index % trail_length;
 
         if(trail_min_segment_length == 0 || s.distSquared(getTrailPoint(-1)) > trail_min_segment_length * trail_min_segment_length) {
             trail_pos[trail_index].set(s);
             trail_vel[trail_index].set(v);
-            trail_index = (trail_index + 1) % i_trail_length;
+            trail_index = (trail_index + 1) % trail_length;
         }
 
-        for (int i = 0; i < i_trail_length; i++) {
+        for (int i = 0; i < trail_length; i++) {
             trail_pos[i].add(trail_vel[i]);
-            trail_vel[i].multiply(trail_momentum.getDouble());
+            trail_vel[i].multiply(trail_momentum);
         }
     }
 
     private void drawTrail(Graphics2D g) {
         if (!trail_enabled) return;
 
-        int i_trail_length = trail_length.getInt();
-        int trail_end_index = trail_close_loop ? i_trail_length :i_trail_length - 1;
+        int trail_end_index = trail_close_loop ? trail_length :trail_length - 1;
         for (int i = 0; i < trail_end_index; i++) {
             Vector2d p1 = getTrailPoint(i);
             Vector2d p2 = getTrailPoint(i+1);
@@ -282,8 +281,7 @@ public class NeuroShip extends GameObject {
 
         double dist_thresh2 = (o.r() * o.r()) + (r() * r()) + 4;    // MEGA HACK
         if(trail_collision_step_count<1) trail_collision_step_count = 1;
-        int i_trail_length = trail_length.getInt();
-        int trail_end_index = trail_close_loop ? i_trail_length :i_trail_length - 1;
+        int trail_end_index = trail_close_loop ? trail_length :trail_length - 1;
         for (int i = 0; i < trail_end_index; i +=  trail_collision_step_count) {
             Vector2d p1 = getTrailPoint(i);
             Vector2d p2 = getTrailPoint(i+1);

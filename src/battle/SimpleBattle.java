@@ -7,6 +7,7 @@ import asteroids.GameObject;
 import asteroids.Missile;
 import math.Vector2d;
 import msafluid.MSAFluidSolver2D;
+import utilities.DoubleWithRange;
 import utilities.JEasyFrame;
 
 import java.awt.*;
@@ -52,6 +53,12 @@ public class SimpleBattle {
     static int releaseVelocity = 5;
     public boolean DO_FLUID = true;
     boolean visible = true;
+
+    DoubleWithRange TRAIL_LENGTH = new DoubleWithRange("trail_length", 200, 0, NeuroShip.trail_length_max);
+    DoubleWithRange TRAIL_MOMENTUM = new DoubleWithRange("trail_momentum", 0.985, 0.9, 1.0);
+
+   // Map dictionary = new HashMap();
+
 
     ArrayList<BattleController> controllers;
 
