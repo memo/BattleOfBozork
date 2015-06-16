@@ -43,7 +43,7 @@ public class NeuroShip extends GameObject {
 
 
     // trail parameters
-    static int trail_length = 200;
+    static int trail_length = 50;
     static double trail_momentum = 0.985;
     static boolean trail_wrap_x = false;
     static boolean trail_wrap_y = false;
@@ -52,10 +52,12 @@ public class NeuroShip extends GameObject {
 
     // trail vars
     static boolean trail_enabled = true;
-    static int trail_length_max = 5000;
+    static int trail_length_max = 1000;
     Vector2d[] trail_pos = new Vector2d[trail_length_max];
     Vector2d[] trail_vel = new Vector2d[trail_length_max];
     int trail_index = 0;
+    int trail_frame_counter = 0;
+    int trail_emit_frame_count = 4;
 
     static public void setTrailLength(int n) {
         if (n < 1) n = 1;
@@ -74,6 +76,7 @@ public class NeuroShip extends GameObject {
             trail_pos[i] = new Vector2d(s.x, s.y, true);
             trail_vel[i] = new Vector2d(0, 0, true);
         }
+        trail_frame_counter = 0;
     }
 
     public NeuroShip copy() {
@@ -97,6 +100,7 @@ public class NeuroShip extends GameObject {
         v.zero();
         d.set(0, -1);
         dead = false;
+        trail_frame_counter = 0;
         // System.out.println("Reset the ship ");
     }
 
@@ -209,17 +213,22 @@ public class NeuroShip extends GameObject {
     private void updateTrail() {
         if (!trail_enabled) return;
 
+        if(trail_frame_counter % trail_emit_frame_count == 0) {
         trail_index = trail_index % trail_length;
         trail_pos[trail_index].x = s.x;
         trail_pos[trail_index].y = s.y;
         trail_vel[trail_index].x = v.x;
         trail_vel[trail_index].y = v.y;
-        trail_index = (trail_index + 1) % trail_length;
+
+            trail_index = (trail_index + 1) % trail_length;
+        }
+
 
         for (int i = 0; i < trail_length; i++) {
             trail_vel[i].multiply(trail_momentum);
             trail_pos[i].add(trail_vel[i]);
         }
+        trail_frame_counter++;
     }
 
     private void drawTrail(Graphics2D g) {
