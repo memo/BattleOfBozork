@@ -95,7 +95,7 @@ public class Datalyzer {
                                     "\n";
                     frameFile.print(line);
                 }
-
+                frameFile.flush();
                 frameFile.close();
             }
         }

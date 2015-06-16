@@ -63,15 +63,14 @@ public class GameRunner {
 
     public static void main(String[] args) {
         ArrayList<BattleController> controllers = new ArrayList<>();
-        controllers.add(new DaniController());
+//        controllers.add(new DaniController());
         controllers.add(new MemoController1());
-//        controllers.add(new RotateAndShoot());
+        controllers.add(new RotateAndShoot());
 //        controllers.add(new PiersMCTS());
 
         GameRunner runner = new GameRunner(3, controllers, 100);
 
         runner.runTheGames();
-
     }
 
 }
@@ -91,7 +90,11 @@ class GameRunnerWrapper implements Callable<Object> {
 
     @Override
     public Object call() throws Exception {
-        game.playGame(p1, p2, new Datalyzer(name));
+        try {
+            game.playGame(p1, p2, new Datalyzer(name));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         System.out.println("Finished: " + name);
         return null;
     }
