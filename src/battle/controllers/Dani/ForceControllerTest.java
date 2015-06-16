@@ -151,15 +151,15 @@ public class ForceControllerTest implements RenderableBattleController
     public Vector2d headingAndForceAt( SimpleBattle gstate, Vector2d shipPos, Vector2d enemyPos )
     {
         NeuroShip enemy = getEnemyShip(gstate);
-        NeuroShip ship = gstate.getShipRef(myPlayerId);
+        NeuroShip ship = gstate.getShip(myPlayerId);
 
         ff.clear();
-        //ff.pointAttraction(enemyPos, 5.0, 0.1);
-        avoidBullets(gstate,10.0, 1);
-        //ff.radialRepulsion(enemyPos, 130, 0.4);
-        followTail(gstate, 30.0, 1);
-        //avoidTrail(gstate, enemy, 30, 1.0);
-        avoidAsteroids(gstate, 1.0);
+        ff.pointAttraction(enemyPos, 5.0, 0.1);
+        avoidBullets(gstate,10.0, 0.4);
+        ff.radialRepulsion(enemyPos, 90, 0.2);
+        followTail(gstate, 30.0, 1.8);
+        avoidTrail(gstate, enemy, 30, 0.4);
+        avoidAsteroids(gstate, 0.6);
         Vector2d rt = ff.headingAndForceAt(shipPos);
 
         return new Vector2d(rt.x,rt.y*0.1);
@@ -167,7 +167,7 @@ public class ForceControllerTest implements RenderableBattleController
 
     public NeuroShip getEnemyShip( SimpleBattle gstate )
     {
-        return gstate.getShipRef((myPlayerId == 1)?0:1);
+        return gstate.getShip((myPlayerId == 1)?0:1);
     }
 
     @Override
@@ -176,8 +176,8 @@ public class ForceControllerTest implements RenderableBattleController
         myPlayerId = playerId;
 
         Action res = new Action(0,0,false);
-        NeuroShip ship = gstate.getShipRef(playerId);
-        NeuroShip enemy = gstate.getShipRef((playerId == 1)?0:1);
+        NeuroShip ship = gstate.getShip(playerId);
+        NeuroShip enemy = gstate.getShip((playerId == 1)?0:1);
 
         Vector2d enemyPos = enemy.s;
         Vector2d shipPos = ship.s;
