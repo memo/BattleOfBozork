@@ -2,6 +2,7 @@ package battle.controllers.Piers;
 
 import asteroids.Action;
 import asteroids.GameObject;
+import asteroids.Missile;
 import battle.BattleController;
 import battle.SimpleBattle;
 
@@ -14,6 +15,7 @@ public class PiersMCTS implements BattleController {
     protected static final int ACTIONS_PER_MACRO_ENEMY_FAR = 10;
     protected static final double DISTANCE_THRESHOLD = 100;
     protected static int ACTIONS_PER_MACRO = 10;
+    int rolloutsPerMacroAction = 0;
     private MacroAction currentBestAction = new MacroAction(new Action(1, 0, false));
     private BetterMCTSNode root;
 
@@ -29,6 +31,10 @@ public class PiersMCTS implements BattleController {
         Action action = currentBestAction.getAction();
         double shortestDistance = Double.MAX_VALUE;
         for (GameObject object : gameStateCopy.getObjects()) {
+            if (object instanceof Missile) {
+                Missile missile = (Missile) object;
+                if (missile.getPlayerID() == playerId) continue;
+            }
             double distance = gameStateCopy.getShip(playerId).s.dist(object.s);
             if (distance < shortestDistance) {
                 shortestDistance = distance;
@@ -47,12 +53,15 @@ public class PiersMCTS implements BattleController {
             travel.updateValues(result);
             i++;
         }
+        rolloutsPerMacroAction += i;
 
         System.out.println("Rollouts achieved: " + i);
 
         if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) {
             currentBestAction = new MacroAction(root.getBestAction());
             root = null;
+            System.out.println("Rollouts Achieved this macro action: " + rolloutsPerMacroAction);
+            rolloutsPerMacroAction = 0;
         }
         return action;
     }
