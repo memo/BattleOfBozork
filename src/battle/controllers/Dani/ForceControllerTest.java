@@ -108,10 +108,10 @@ public class ForceControllerTest implements RenderableBattleController
     public Vector2d rotThrustAt( SimpleBattle gstate, Vector2d shipPos, Vector2d enemyPos )
     {
         ff.clear();
-        //ff.pointAttraction(enemyPos, 100, 0.5);
-        //avoidBullets(gstate,20.0, 0.5);
-        ff.radialRepulsion(enemyPos, 230, 0.2);
-        //followTail(gstate, 30.0, 0.5);
+        ff.pointAttraction(enemyPos, 100, 0.5);
+        avoidBullets(gstate,10.0, 1);
+        ff.radialRepulsion(enemyPos, 130, 0.4);
+        followTail(gstate, 30.0, 1);
 
         Vector2d rt = ff.rotThrustAt(shipPos);
         return new Vector2d(rt.x,rt.y*0.1);
