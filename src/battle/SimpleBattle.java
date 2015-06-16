@@ -44,6 +44,8 @@ public class SimpleBattle {
     static int damageMissileHit = 1;
     static int damageAsteroidHit = 10;
     static int damageTrailHit = 20;
+    static double trail_bounce_factor = 1.5;
+
     static int startHealth = 100;
     static int releaseVelocity = 5;
     public boolean DO_FLUID = true;
@@ -208,13 +210,13 @@ public class SimpleBattle {
         for (GameObject object : objects) checkCollision(object);
 
         // check collision with trail
-        if (s1.collisionWithTrail(s2, 0)) {
+        if (s1.collisionWithTrail(s2, trail_bounce_factor)) {
             System.out.println("s2 hit trail of s1");
             this.stats.get(1).nPoints -= damageTrailHit;
             s2.hit();
         }
 
-        if (s2.collisionWithTrail(s1, 0)) {
+        if (s2.collisionWithTrail(s1, trail_bounce_factor)) {
             System.out.println("s1 hit trail of s2");
             this.stats.get(0).nPoints -= damageTrailHit;
             s1.hit();
@@ -238,8 +240,8 @@ public class SimpleBattle {
             } else {
                 // advect fluid
                 if (DO_FLUID) advect_fluid(object);
-                s1.collisionWithTrail(object, 1);
-                s2.collisionWithTrail(object, 1);
+                s1.collisionWithTrail(object, trail_bounce_factor);
+                s2.collisionWithTrail(object, trail_bounce_factor);
 
             }
         }
