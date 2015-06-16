@@ -13,6 +13,8 @@ import java.awt.*;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 import static asteroids.Constants.*;
 
@@ -428,7 +430,7 @@ public class SimpleBattle {
         assert playerID < 2;
         assert playerID >= 0;
 
-        return stats.get(playerID).nMissiles - nMissiles;
+        return nMissiles - stats.get(playerID).nMissiles;
     }
 
     private void wrap(GameObject ob) {
