@@ -45,7 +45,17 @@ public class ParameterManager {
         }
     }
 
+    public void getData(String [] keys, double [] values) {
+        keys = new String[param_map.size()];
+        values = new double[param_map.size()];
+        int i=0;
+        for (Map.Entry<String, DoubleWithRange> entry : param_map.entrySet()) {
+            keys[i] = entry.getKey();
+            values[i] = entry.getValue().getDouble();
+        }
+    }
 }
+
 
 
  class DoubleWithRange {
