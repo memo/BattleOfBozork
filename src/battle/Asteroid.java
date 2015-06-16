@@ -21,7 +21,6 @@ public class Asteroid extends GameObject {
     int[] px, py;
     double rotRate;
     double rot;
-    boolean dead;
     int index;
 
     public Asteroid(Vector2d s, Vector2d v, int index) {
@@ -86,7 +85,7 @@ public class Asteroid extends GameObject {
         rot += rotRate;
     }
     public String toString() {
-        return s.toString();
+        return "Asteroid: " +  s.toString();
     }
 
     public void hit() {

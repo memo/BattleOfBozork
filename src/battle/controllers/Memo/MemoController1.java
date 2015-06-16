@@ -1,10 +1,7 @@
 package battle.controllers.Memo;
 
 import asteroids.*;
-import battle.BattleController;
-import battle.NeuroShip;
-import battle.RenderableBattleController;
-import battle.SimpleBattle;
+import battle.*;
 import math.Vector2d;
 import battle.controllers.Memo.MemoControllerUtils;
 
@@ -184,7 +181,7 @@ public class MemoController1 implements RenderableBattleController {
 
             // look for missiles nearby
             for (GameObject go : gs.getObjects()) {
-                if (go instanceof Missile) {
+                if (go instanceof Missile || go instanceof battle.Asteroid) {
                     if (go.s.dist(thisShip.s) < MISSILE_AVOID_DIST) {
                         //missiles.add((Missile) go);
                         num_missiles++;
