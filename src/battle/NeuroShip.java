@@ -201,8 +201,9 @@ public class NeuroShip extends GameObject {
         // super.hit();
         // System.out.println("Ship destroyed");
 
-        dead = true;
+        //dead = true;
         // sounds.play(sounds.bangLarge);
+        // do nothing
     }
 
     public boolean dead() {

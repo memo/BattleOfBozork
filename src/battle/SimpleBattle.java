@@ -39,8 +39,12 @@ public class SimpleBattle {
     // each player
     static int nMissiles = 100;
     static int nTicks = 1000;
-    static int pointsPerAsteroidKill = 10;
-    static int pointsPerEnemyKill = 10000;
+    //static int pointsPerAsteroidKill = 10;
+    //static int pointsPerEnemyKill = 10000;
+    static int damageMissileHit = 1;
+    static int damageAsteroidHit = 10;
+    static int damageTrailHit = 20;
+    static int startHealth = 100;
     static int releaseVelocity = 5;
     public boolean DO_FLUID = true;
     boolean visible = true;
@@ -101,8 +105,8 @@ public class SimpleBattle {
         this.p2 = p2;
         reset();
         makeAsteroids(numberOfAsteroids);
-        stats.add(new PlayerStats(0, 0));
-        stats.add(new PlayerStats(0, 0));
+        stats.add(new PlayerStats(0, startHealth));
+        stats.add(new PlayerStats(0, startHealth));
 
         if (datalyzer != null)
             datalyzer.begin();
@@ -142,8 +146,8 @@ public class SimpleBattle {
         s2 = buildShip(500, 250, 1);
         this.currentTick = 0;
 
-        stats.add(new PlayerStats(0, 0));
-        stats.add(new PlayerStats(0, 0));
+        stats.add(new PlayerStats(0, startHealth));
+        stats.add(new PlayerStats(0, startHealth));
 
         if (DO_FLUID) fluid.reset();
     }
@@ -205,12 +209,14 @@ public class SimpleBattle {
 
         // check collision with trail
         if (s1.collisionWithTrail(s2, 0)) {
-            System.out.println("s2 HIT");
+            System.out.println("s2 hit trail of s1");
+            this.stats.get(1).nPoints -= damageTrailHit;
             s2.hit();
         }
 
         if (s2.collisionWithTrail(s1, 0)) {
-            System.out.println("s1 HIT");
+            System.out.println("s1 hit trail of s2");
+            this.stats.get(0).nPoints -= damageTrailHit;
             s1.hit();
         }
 
@@ -295,9 +301,9 @@ public class SimpleBattle {
             for (GameObject ob : objects) {
                 if (!(ob instanceof Missile)) {
                     if (overlap(actor, ob)) {
-                        if(ob instanceof Asteroid){
+                        //if(ob instanceof Asteroid){
                             // argh, missiles don't know who we give the points to :(
-                        }
+                        //}
                         actor.hit();
                         ob.hit();
                         return;
@@ -311,11 +317,10 @@ public class SimpleBattle {
                     // the object is hit, and the actor is also
                     int playerID = (actor == s1 ? 0 : 1);
                     if (ob instanceof Missile) {
-                        // good to hit a ship though
-                        this.stats.get(playerID == 0 ? 1 : 0).nPoints += pointsPerEnemyKill;
+                        this.stats.get(playerID).nPoints -= damageMissileHit;
+                    } else if(ob instanceof Asteroid) {
+                        this.stats.get(playerID).nPoints -= damageAsteroidHit;
                     }
-                    // always bad for a ship to get hit
-                    this.stats.get(playerID).nPoints -= pointsPerEnemyKill;
 
                     ob.hit();
                     actor.hit();
