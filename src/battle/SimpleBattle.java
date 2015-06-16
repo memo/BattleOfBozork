@@ -133,7 +133,7 @@ public class SimpleBattle {
         }
 
         if(datalyzer!=null)
-            datalyzer.end(this, "data_test1");
+            datalyzer.end(this);
         return 0;
     }
 

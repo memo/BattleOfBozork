@@ -50,6 +50,12 @@ public class Datalyzer {
 
     public Datalyzer()
     {
+        this("data_test1");
+    }
+
+    public Datalyzer( String name )
+    {
+        this.name = name;
     }
 
     public void begin()
@@ -63,12 +69,12 @@ public class Datalyzer {
         results = new PlayerResult[2];
     }
 
-    public void end( SimpleBattle gameState, String name )
+    public void end( SimpleBattle gameState )
     {
         try {
             for (int i = 0; i < 2; i++)
             {
-
+                // This saves the CSV file
                 PrintWriter frameFile = new PrintWriter( path + name + "_player" + i + ".csv", "UTF-8");
 
                 frameFile.print(getCsvLabels());
