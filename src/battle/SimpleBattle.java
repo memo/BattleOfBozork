@@ -45,6 +45,7 @@ public class SimpleBattle {
     static int damageAsteroidHit = 10;
     static int damageTrailHit = 20;
     static double trail_bounce_factor = 1.5;
+    static double object_max_speed = 50;
 
     static int startHealth = 100;
     static int releaseVelocity = 5;
@@ -136,8 +137,9 @@ public class SimpleBattle {
             view.removeKeyListener((KeyListener) p2);
         }
 
-        if (datalyzer != null)
-            datalyzer.end(this, "data_test1");
+        if(datalyzer!=null)
+            datalyzer.end(this);
+
         return 0;
     }
 
@@ -232,6 +234,11 @@ public class SimpleBattle {
         // here need to add the game objects ...
         java.util.List<GameObject> killList = new ArrayList<GameObject>();
         for (GameObject object : objects) {
+            // clamp speed
+            double object_vel_squared = object.v.magSquared();
+            if(object_vel_squared > object_max_speed * object_max_speed) {
+                object.v.multiply(object_max_speed / Math.sqrt(object_vel_squared));
+            }
             object.update();
             wrap(object);
 

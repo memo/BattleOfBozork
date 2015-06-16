@@ -27,7 +27,7 @@ public class PiersMCTS implements BattleController {
     @Override
     public Action getAction(SimpleBattle gameStateCopy, int playerId) {
         GameTimer timer = new GameTimer();
-        timer.setTimeBudgetMilliseconds(100);
+        timer.setTimeBudgetMilliseconds(40);
         Action action = currentBestAction.getAction();
         double shortestDistance = Double.MAX_VALUE;
         for (GameObject object : gameStateCopy.getObjects()) {
