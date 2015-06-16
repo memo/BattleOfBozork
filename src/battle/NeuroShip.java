@@ -275,6 +275,13 @@ public class NeuroShip extends GameObject {
         }
     }
 
+    public int getTrailLength() { return trail_length; }
+
+
+    public Vector2d getTrailPoint(int i)
+    {
+        return trail_pos[(trail_index + i) % trail_length];
+    }
 
     public boolean collisionWithTrail(GameObject o, double bounce_factor) {
         if (!trail_enabled) return false;

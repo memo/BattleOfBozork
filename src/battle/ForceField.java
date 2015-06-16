@@ -25,8 +25,8 @@ class ForceObj{
 
     static public Color attractColor = Color.green;
     static public Color repulseColor = Color.red;
-    static public boolean normalize = true;
-    static public double multiplier = 200.0; // This will define the magnitude
+    static public boolean normalize = false;
+    static public double multiplier = 1.0; // This will define the magnitude
 }
 
 
@@ -291,6 +291,7 @@ class SegmentRepulsion extends ForceObj
 public class ForceField {
 
     public ArrayList<ForceObj> forceObjs;
+    public double maxForce = 100.0;
 
     public ForceField()
     {
@@ -330,7 +331,7 @@ public class ForceField {
         return f;
     }
 
-    public Vector2d rotThrustAt( Vector2d pos )
+    public Vector2d headingAndForceAt( Vector2d pos )
     {
         Vector2d rt = new Vector2d(0,0);
 
@@ -341,12 +342,15 @@ public class ForceField {
         if( mag > 0.0 )
             f = Vector2d.divide(f, mag);
 
+        if( mag > maxForce )
+            mag = maxForce;
+
         return new Vector2d(Util.heading(f), mag);
     }
 
     public void draw( Graphics2D g, int width, int height, int step )
     {
-        g.setColor(Color.gray);
+        g.setColor(Color.darkGray);//Color(0.1f,0.1f,0.1f));
 
         for( int y = 0; y < height; y+=step )
         {
