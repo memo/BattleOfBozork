@@ -2,7 +2,6 @@ package battle;
 
 import asteroids.*;
 import math.Vector2d;
-import utilities.DoubleWithRange;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -26,7 +25,7 @@ public class NeuroShip extends GameObject {
     static double maxSpeed = 3;
 
     // this is the friction that makes the ship slow down over time
-    static double loss = 0.997;
+    double ship_momentum = 0.997;
 
     double releaseVelocity = 0;
     double minVelocity = 2;
@@ -146,7 +145,7 @@ public class NeuroShip extends GameObject {
         v.add(d, thrustSpeed * t * 0.3 / 2);
         v.y += gravity;
         // v.x = 0.5;
-        v.multiply(loss);
+        v.multiply(ship_momentum);
 
         // This is fairly basic, but it'll do for now...
         v.x = clamp(v.x, -maxSpeed, maxSpeed);

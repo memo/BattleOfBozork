@@ -4,11 +4,12 @@ import analytics.Datalyzer;
 import asteroids.*;
 import math.Vector2d;
 import msafluid.MSAFluidSolver2D;
-import utilities.DoubleWithRange;
 import utilities.JEasyFrame;
+import utilities.ParameterManager;
 
 import java.awt.*;
 import java.awt.event.KeyListener;
+import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,11 +54,6 @@ public class SimpleBattle {
     public boolean DO_FLUID = true;
     boolean visible = true;
 
-
-    String param_trail_length = "";
-    Map<String, DoubleWithRange> params = new HashMap<String, DoubleWithRange>(); // see initParams
-
-
     ArrayList<BattleController> controllers;
 
     ArrayList<GameObject> objects;
@@ -71,10 +67,21 @@ public class SimpleBattle {
     MSAFluidSolver2D fluid;
     java.awt.image.BufferedImage fluid_image;
 
+    public ParameterManager params = new ParameterManager();
+
 
     public void initParams() {
-        params.put("trail_length", new DoubleWithRange(200, 0, NeuroShip.trail_length_max));
-        params.put("trail_momentum", new DoubleWithRange(0.985, 0.9, 1.0));
+        params.add("trail_length", 200, 0, NeuroShip.trail_length_max);
+        params.add("trail_momentum", 0.985, 0.9, 1.0);
+        params.add("ship_momentum", 0.997, 0.9, 1.0);
+    }
+
+    public void randomizeParams() {
+        params.randomize();
+    }
+
+    public void resetParams() {
+        params.reset();
     }
 
     public SimpleBattle() {
@@ -82,8 +89,6 @@ public class SimpleBattle {
     }
 
     public SimpleBattle(boolean visible) {
-        initParams();
-
         this.objects = new ArrayList<GameObject>();
         this.stats = new ArrayList<PlayerStats>();
         this.visible = visible;
@@ -91,9 +96,26 @@ public class SimpleBattle {
         if (visible) {
             view = new BattleView(this);
             new JEasyFrame(view, "battle");
+        } else {
+            DO_FLUID = false;
         }
+    }
+
+    public int getTicks() {
+        return currentTick;
+    }
+
+    public int playGame(BattleController p1, BattleController p2) {
+        return playGame(p1, p2, null);
+    }
+
+    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer) {
+        initParams();
+        randomizeParams();
+
 
         if (DO_FLUID) {
+            System.out.println("CREATING MSA FLUID (if you are seeing this lots of times, something has gone wrong");
             //  FLUID_NY = FLUID_NX * Constants.height / Constants.width;
             fluid = new MSAFluidSolver2D(FLUID_NX, FLUID_NY);
             fluid.enableRGB(true);
@@ -106,17 +128,7 @@ public class SimpleBattle {
             fluid_image = new BufferedImage(fluid.getWidth(), fluid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         }
 
-    }
 
-    public int getTicks() {
-        return currentTick;
-    }
-
-    public int playGame(BattleController p1, BattleController p2) {
-        return playGame(p1, p2, null);
-    }
-
-    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer) {
         this.p1 = p1;
         this.p2 = p2;
         reset();
@@ -174,8 +186,9 @@ public class SimpleBattle {
         Vector2d speed = new Vector2d(true);
         Vector2d direction = new Vector2d(1, 0, true);
         NeuroShip ship = new NeuroShip(position, speed, direction, playerID);
-        ship.trail_momentum = params.get("trail_momentum").getDouble();
-        ship.trail_length = params.get("trail_length").getInt();
+        ship.trail_momentum = params.getDouble("trail_momentum");
+        ship.trail_length = params.getInt("trail_length");
+        ship.ship_momentum = params.getDouble("ship_momentum");
 
         return ship;
     }
