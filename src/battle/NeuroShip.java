@@ -57,7 +57,7 @@ public class NeuroShip extends GameObject {
     Vector2d[] trail_vel = new Vector2d[trail_length_max];
     int trail_index = 0;
     int trail_frame_counter = 0;
-    int trail_emit_frame_count = 4;
+    int trail_emit_frame_count = 0;
 
     static public void setTrailLength(int n) {
         if (n < 1) n = 1;
@@ -81,6 +81,7 @@ public class NeuroShip extends GameObject {
 
     public NeuroShip copy() {
         NeuroShip ship = new NeuroShip(s, v, d, playerID);
+        ship.trail_emit_frame_count = 5;
         ship.releaseVelocity = releaseVelocity;
         return ship;
     }
