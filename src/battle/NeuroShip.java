@@ -284,6 +284,7 @@ public class NeuroShip extends GameObject {
                         vel_perp.multiply(-bounce_factor);
 
                         o.v = Vector2d.add(vel_perp, vel_edge);
+                        o.s.add(vel_perp);
 
                     }
                     return true;
