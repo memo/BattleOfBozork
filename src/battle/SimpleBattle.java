@@ -481,7 +481,7 @@ public class SimpleBattle {
 
     public boolean isGameOver() {
         if (s1.dead() || s2.dead()) return true;
-        if (getMissilesLeft(0) >= 0 && getMissilesLeft(1) >= 0) {
+        if (getMissilesLeft(0) <= 0 && getMissilesLeft(1) <= 0) {
             //ensure that there are no bullets left in play
             if (objects.isEmpty()) {
                 return true;
