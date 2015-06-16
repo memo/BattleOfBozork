@@ -439,6 +439,17 @@ public class SimpleBattle {
         }
     }
 
+    public NeuroShip getShipRef(int playerID) {
+        assert playerID < 2;
+        assert playerID >= 0;
+
+        if (playerID == 0) {
+            return s1; ///.copy();
+        } else {
+            return s2; ///.copy();
+        }
+    }
+
     public NeuroShip getShip(int playerID) {
         assert playerID < 2;
         assert playerID >= 0;
