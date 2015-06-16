@@ -114,10 +114,12 @@ public class ForceControllerTest implements RenderableBattleController
 
     void avoidTrail( SimpleBattle gstate, NeuroShip ship, double width, double weight )
     {
+
         int n = ship.getTrailLength();
         int skip = 20;
         for( int i = 0; i < n-skip; i+= skip)
         {
+            //System.out.println(i + ", " + (i+skip) + "   " + n);
             Vector2d a = ship.getTrailPoint(i);
             Vector2d b = ship.getTrailPoint(i+skip);
 
