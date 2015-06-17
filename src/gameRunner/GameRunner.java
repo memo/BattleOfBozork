@@ -6,7 +6,6 @@ import battle.SimpleBattle;
 import battle.controllers.Dani.DaniController;
 import battle.controllers.Memo.MemoController1;
 import battle.controllers.Memo.MemoControllerRandom;
-import battle.controllers.Piers.BetterMCTSNode;
 import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
 
@@ -17,7 +16,7 @@ import java.util.concurrent.Executors;
 
 /**
  * Class for running multiple games and logging the results
- * <p/>
+ * <p>
  * Created by pwillic on 16/06/2015.
  */
 public class GameRunner {
@@ -46,12 +45,11 @@ public class GameRunner {
             System.out.println("Must have 3 arguments [threads|runs|filePrefix]");
         } else {
             ArrayList<BattleController> controllers = new ArrayList<BattleController>();
-//        controllers.add(new DaniController());
-            controllers.add(new MemoControllerRandom());
-            controllers.add(new MemoController1());
-            controllers.add(new RotateAndShoot());
-
-//            controllers.add(new PiersMCTS());
+        controllers.add(new DaniController());
+//            controllers.add(new MemoController1());
+//            controllers.add(new RotateAndShoot());
+//            controllers.add(new MemoControllerRandom());
+            controllers.add(new PiersMCTS());
 
             GameRunner runner = new GameRunner(Integer.parseInt(args[0]), controllers, Integer.parseInt(args[1]));
             runner.prefix = args[2];
@@ -65,14 +63,14 @@ public class GameRunner {
         battle.DO_FLUID = false;
         battle.reset();
 
+        int matchup = 0;
         for (BattleController p1 : controllers) {
             for (BattleController p2 : controllers) {
-                if (p1 != p2) {
-                    for (int i = 0; i < gamesPerMatchup; i++) {
-                        String name = prefix + p1.getClass().getSimpleName() + "-" + p2.getClass().getSimpleName() + "-" + i;
-                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, name));
-                    }
+                for (int i = 0; i < gamesPerMatchup; i++) {
+                    String name = prefix + "p1" + p1.getClass().getSimpleName() + "-p2" + p2.getClass().getSimpleName() + "-" + matchup + "-" + i;
+                    runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, name));
                 }
+                matchup++;
             }
         }
         System.out.println("Starting the games");

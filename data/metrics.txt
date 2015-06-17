@@ -1,0 +1,8 @@
+duration - Duration of game: t
+exploration - Exploration: | sigma( pos ) |
+
+- Smoothness of motion:
+acc_mean	- mean( | acc | )
+acc_var		- variance( | acc  | )
+jerk_mean	- mean( | jerk | )
+jerk_var	- variance( | jerk | )
