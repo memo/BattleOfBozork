@@ -3,7 +3,9 @@ package gameRunner;
 import analytics.Datalyzer;
 import battle.BattleController;
 import battle.SimpleBattle;
+import battle.controllers.Dani.DaniController;
 import battle.controllers.Memo.MemoController1;
+import battle.controllers.Memo.MemoControllerRandom;
 import battle.controllers.Piers.BetterMCTSNode;
 import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
@@ -45,8 +47,10 @@ public class GameRunner {
         } else {
             ArrayList<BattleController> controllers = new ArrayList<BattleController>();
 //        controllers.add(new DaniController());
+            controllers.add(new MemoControllerRandom());
             controllers.add(new MemoController1());
             controllers.add(new RotateAndShoot());
+
 //            controllers.add(new PiersMCTS());
 
             GameRunner runner = new GameRunner(Integer.parseInt(args[0]), controllers, Integer.parseInt(args[1]));

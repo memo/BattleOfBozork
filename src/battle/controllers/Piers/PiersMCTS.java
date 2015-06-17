@@ -42,12 +42,15 @@ public class PiersMCTS implements BattleController {
         }
         ACTIONS_PER_MACRO = (shortestDistance > DISTANCE_THRESHOLD) ? ACTIONS_PER_MACRO_ENEMY_FAR : ACTIONS_PER_MACRO_ENEMY_CLOSE;
 
+
+        if (root == null) root = new BetterMCTSNode(2.0, playerId, this);
+
         if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) root = new BetterMCTSNode(2.0, playerId, this);
 
         int i = 0;
         while (timer.remainingTimePercent() > 10) {
-            if (root == null) root = new BetterMCTSNode(2.0, playerId, this);
             SimpleBattle copy = gameStateCopy.clone();
+//            System.out.println(root);
             BetterMCTSNode travel = root.select(copy, 3);
             if(travel != null) {
                 double result = travel.rollout(copy, 5);
@@ -61,7 +64,6 @@ public class PiersMCTS implements BattleController {
 
         if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) {
             currentBestAction = new MacroAction(root.getBestAction());
-            root = null;
 //            System.out.println("Rollouts Achieved this macro action: " + rolloutsPerMacroAction);
             rolloutsPerMacroAction = 0;
         }

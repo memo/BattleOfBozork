@@ -11,9 +11,8 @@ import java.util.Random;
 public class BetterMCTSNode {
     private static final double EPSILON = 1e-6;
     private Action[] allActions;
-    private static Random random = new Random();
+    private Random random = new Random();
     private Action ourMoveToThisState;
-
     private BetterMCTSNode parent;
     private BetterMCTSNode[] children;
     private int numberOfChildrenExpanded;
@@ -48,7 +47,6 @@ public class BetterMCTSNode {
         this.playerID = parent.playerID;
         this.ourNode = parent.ourNode;
         this.mcts = parent.mcts;
-
     }
 
     public void setAllActions() {
@@ -63,6 +61,7 @@ public class BetterMCTSNode {
                     allActions[i++] = new Action(thrust, turn, false);
                 }
             }
+            if (i != 6) System.err.println("i: " + i);
         }
     }
 
