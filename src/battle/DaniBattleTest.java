@@ -31,7 +31,7 @@ public class DaniBattleTest {
 
         for( int i = 0; i < 10; i++ )
         {
-            BattleController fire1 = new ArrowsController();
+            BattleController fire1 = new ForceControllerTest();
             //BattleController fire2 = new MemoControllerRandom();
             //BattleController fire2 = new MMMCTS();
             //BattleController fire1 = new WASDController();
