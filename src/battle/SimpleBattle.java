@@ -51,7 +51,7 @@ public class SimpleBattle {
 
     static int startHealth = 100;
     static int releaseVelocity = 5;
-    public boolean DO_FLUID = true;
+    public boolean DO_FLUID = false;
     boolean visible = true;
 
     ArrayList<BattleController> controllers;

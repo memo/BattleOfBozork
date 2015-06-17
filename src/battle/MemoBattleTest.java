@@ -2,6 +2,7 @@ package battle;
 
 import analytics.Datalyzer;
 
+import battle.controllers.Dani.ForceControllerTest;
 import battle.controllers.Human.ArrowsController;
 import battle.controllers.Memo.MemoControllerRandom;
 import battle.controllers.Memo.MemoController1;
@@ -19,7 +20,7 @@ public class MemoBattleTest {
         SimpleBattle battle = new SimpleBattle();
 
         BattleController player1 = new WASDController();
-        BattleController player2 = new ArrowsController();
+        BattleController player2 = new ForceControllerTest();
         battle.playGame(player1, player2, new Datalyzer() );
     }
 

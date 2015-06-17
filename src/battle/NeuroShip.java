@@ -18,7 +18,7 @@ public class NeuroShip extends GameObject {
     // is thrusting
     static int[] xpThrust = {-2, 0, 2, 0};
     static int[] ypThrust = {2, 3, 2, 0};
-    public static double scale = 5;
+    public static double scale = 7;
 
     // define how quickly the ship will rotate
     static double steerStep = 10 * Math.PI / 180;
