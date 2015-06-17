@@ -18,8 +18,8 @@ public class MemoBattleTest {
     public static void main(String[] args) {
 
         SimpleBattle battle = new SimpleBattle();
-
-        BattleController player1 = new WASDController();
+        SimpleBattle.game_version = "B";
+        BattleController player1 = new ArrowsController();
         BattleController player2 = new ForceControllerTest();
         battle.playGame(player1, player2, new Datalyzer() );
     }
