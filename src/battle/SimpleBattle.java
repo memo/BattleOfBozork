@@ -4,13 +4,16 @@ import analytics.Datalyzer;
 import asteroids.*;
 import math.Vector2d;
 import msafluid.MSAFluidSolver2D;
-import utilities.DoubleWithRange;
 import utilities.JEasyFrame;
+import utilities.ParameterManager;
 
 import java.awt.*;
 import java.awt.event.KeyListener;
+import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static asteroids.Constants.*;
 
@@ -51,12 +54,6 @@ public class SimpleBattle {
     public boolean DO_FLUID = true;
     boolean visible = true;
 
-    DoubleWithRange TRAIL_LENGTH = new DoubleWithRange("trail_length", 200, 0, NeuroShip.trail_length_max);
-    DoubleWithRange TRAIL_MOMENTUM = new DoubleWithRange("trail_momentum", 0.985, 0.9, 1.0);
-
-   // Map dictionary = new HashMap();
-
-
     ArrayList<BattleController> controllers;
 
     ArrayList<GameObject> objects;
@@ -70,6 +67,24 @@ public class SimpleBattle {
     MSAFluidSolver2D fluid;
     java.awt.image.BufferedImage fluid_image;
 
+    public ParameterManager params = new ParameterManager();
+
+
+    public void initParams() {
+        params.add("trail_length", 200, 0, NeuroShip.trail_length_max);
+        params.add("trail_momentum", 0.985, 0.9, 1.0);
+        params.add("ship_momentum", 0.997, 0.9, 1.0);
+        params.add("num_asteroids", 10, 5, 50);
+        params.add("missile_ttl", 60, 30, 200);
+    }
+
+    public void randomizeParams() {
+        params.randomize();
+    }
+
+    public void resetParams() {
+        params.reset();
+    }
 
     public SimpleBattle() {
         this(true);
@@ -83,9 +98,35 @@ public class SimpleBattle {
         if (visible) {
             view = new BattleView(this);
             new JEasyFrame(view, "battle");
+        } else {
+            DO_FLUID = false;
         }
+        initParams();
+    }
+
+    public int getTicks() {
+        return currentTick;
+    }
+
+    public int playGame(BattleController p1, BattleController p2) {
+        return playGame(p1, p2, null, false);
+    }
+
+    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer) {
+        return playGame(p1, p2, datalyzer, false);
+    }
+
+    public int playGame(BattleController p1, BattleController p2, boolean randomize_params) {
+        return playGame(p1, p2, null, randomize_params);
+    }
+
+    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer, boolean randomize_params) {
+        initParams();
+        if(randomize_params) randomizeParams();
+
 
         if (DO_FLUID) {
+            System.out.println("CREATING MSA FLUID (if you are seeing this lots of times, something has gone wrong");
             //  FLUID_NY = FLUID_NX * Constants.height / Constants.width;
             fluid = new MSAFluidSolver2D(FLUID_NX, FLUID_NY);
             fluid.enableRGB(true);
@@ -98,21 +139,11 @@ public class SimpleBattle {
             fluid_image = new BufferedImage(fluid.getWidth(), fluid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         }
 
-    }
 
-    public int getTicks() {
-        return currentTick;
-    }
-
-    public int playGame(BattleController p1, BattleController p2) {
-        return playGame(p1, p2, null);
-    }
-
-    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer) {
         this.p1 = p1;
         this.p2 = p2;
         reset();
-        makeAsteroids(numberOfAsteroids);
+        makeAsteroids(params.getInt("num_asteroids"));
         stats.add(new PlayerStats(0, startHealth));
         stats.add(new PlayerStats(0, startHealth));
 
@@ -131,9 +162,11 @@ public class SimpleBattle {
             view.requestFocus();
         }
 
+//        System.out.println("Start game...");
         while (!isGameOver()) {
             update(datalyzer);
         }
+//        System.out.println("Game over.");
 
         if (p1 instanceof KeyListener) {
             view.removeKeyListener((KeyListener) p1);
@@ -165,8 +198,12 @@ public class SimpleBattle {
         Vector2d position = new Vector2d(x, y, true);
         Vector2d speed = new Vector2d(true);
         Vector2d direction = new Vector2d(1, 0, true);
+        NeuroShip ship = new NeuroShip(position, speed, direction, playerID);
+        ship.trail_momentum = params.getDouble("trail_momentum");
+        ship.trail_length = params.getInt("trail_length");
+        ship.ship_momentum = params.getDouble("ship_momentum");
 
-        return new NeuroShip(position, speed, direction, playerID);
+        return ship;
     }
 
     public void update() {
@@ -303,6 +340,7 @@ public class SimpleBattle {
 
         state.s1 = s1.copy();
         state.s2 = s2.copy();
+        state.params = params;
         return state;
     }
 
@@ -385,7 +423,7 @@ public class SimpleBattle {
         NeuroShip currentShip = playerId == 0 ? s1 : s2;
         PlayerStats stats = this.stats.get(playerId);
         if (stats.nMissiles < nMissiles) {
-            Missile m = new Missile(s, new Vector2d(0, 0, true), playerId);
+            Missile m = new Missile(params.getInt("missile_ttl"), s, new Vector2d(0, 0, true), playerId);
             m.v.add(d, releaseVelocity);
             // make it clear the ship
             m.s.add(m.v, (currentShip.r() + missileRadius) * 1.5 / m.v.mag());

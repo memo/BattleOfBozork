@@ -13,11 +13,11 @@ public class BattleMissile extends GameObject {
     int id;
     Color color;
 
-    public BattleMissile(Vector2d s, Vector2d v, int id) {
+    public BattleMissile(int start_ttl, Vector2d s, Vector2d v, int id) {
         super(s, v);
         this.id = id;
         color = pColors[id];
-        ttl = missileTTL;
+        ttl = start_ttl;
         r = 4;
     }
 
@@ -31,9 +31,9 @@ public class BattleMissile extends GameObject {
 
     @Override
     public BattleMissile copy() {
-        BattleMissile copy = new BattleMissile(s, v, id);
+        BattleMissile copy = new BattleMissile(ttl, s, v, id);
         updateClone(copy);
-        copy.ttl = ttl;
+       // copy.ttl = ttl;
         copy.color = color;
         return copy;
     }
