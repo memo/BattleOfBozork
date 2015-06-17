@@ -173,19 +173,30 @@ def normalized_dataframe(d):
             lo = np.min(df_norm[key])
             hi = np.max(df_norm[key])
             df_norm[key] = (df_norm[key] - lo) / (hi - lo)
-    return d
+    return df_norm
 
-    
-# Get costs 
-def costs(df):
-    D = df['duration']
-    E = df['exploration']
-    return np.array([ d+e for d,e in zip(D, E) ])
+def compute_costs_and_sort(df):
+    df = df.copy()
+    # Get costs 
+    def costs(df):
+        D = df['duration']
+        E = df['exploration']
+        return np.array([ d+e for d,e in zip(D, E) ])
         
-df['cost'] = pd.Series(costs(df), df.index)
-df.head()
-df_sorted = df.sort('cost')
+        
+    df['cost'] = pd.Series(costs(df), df.index)
+    df.head()
+    df_sorted = df.sort('cost')
+    return df_sorted
+    
+    
+df_norm = normalized_dataframe(df)    
+df_norm.describe()
+
+df_sorted = compute_costs_and_sort(df_norm)
 df_sorted.head()
+
+
 
 print df_sorted['key'][0]
 
