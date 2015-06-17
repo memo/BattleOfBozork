@@ -34,7 +34,7 @@ public interface Constants {
 
     double missileMinVelocity = 2;
     int missileRadius = 2;
-    int missileTTL = 60;
+//    int missileTTL = 60;
 
     // how many smaller asteroids an asteroid splits into
     int nSplits = 3;
@@ -49,6 +49,6 @@ public interface Constants {
     // scaling factor applied to random asteroid speed
     double speedScale = 0.5;
 
-    int numberOfAsteroids = 10;
+    //int numberOfAstejroids = 10;
 
 }

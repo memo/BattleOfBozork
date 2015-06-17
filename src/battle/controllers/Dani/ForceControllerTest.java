@@ -7,7 +7,7 @@ import asteroids.GameState;
 import asteroids.GameObject;
 import asteroids.Ship;
 import battle.RenderableBattleController;
-import battle.BattleMissile;
+import asteroids.Missile;
 import battle.NeuroShip;
 import battle.SimpleBattle;
 import asteroids.Missile;
@@ -35,7 +35,7 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
 
     Action action;
 
-    double viewRadius = 40.0;
+    double viewRadius = 400;
     double thrustAmt = 1.5;
     double rotAmt = 1.5;
     int shotWait = 0;
@@ -43,7 +43,7 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
 
     boolean anyMissiles = false;
 
-    boolean debugDraw = true; // Use V key to toggle
+    boolean debugDraw = false; // Use V key to toggle
 
     ArrayList<Vector2d> foo = new ArrayList<Vector2d>();
 
@@ -67,16 +67,23 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         Vector2d enemyPos = new Vector2d(enemy.s);
         Vector2d thisPos = new Vector2d(ship.s);
         double l = enemyPos.dist(thisPos);
-        Vector2d tp = new Vector2d();
-
-        Vector2d d = new Vector2d(ship.d, true);
-        d.normalise();;
-        tp.x = thisPos.x + d.x * l;
-        tp.y = thisPos.y + d.y * l;
-
-        if( tp.dist(enemyPos) <= viewRadius)
+        Vector2d d = Vector2d.subtract(enemyPos, thisPos);
+        d.normalise();
+        if(Util.dot(d, ship.d) > 0.7 &&
+            l < viewRadius)
             return true;
         return false;
+//
+//        Vector2d tp = new Vector2d();
+//
+//        Vector2d d = new Vector2d(ship.d, true);
+//        d.normalise();;
+//        tp.x = thisPos.x + d.x * l;
+//        tp.y = thisPos.y + d.y * l;
+//
+//        if( tp.dist(enemyPos) <= viewRadius)
+//            return true;
+//        return false;
     }
 
     ArrayList<Missile> getMissiles(SimpleBattle gstate)
@@ -111,11 +118,16 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         return A;
     }
 
+    Vector2d getPointBehindShip( NeuroShip ship,  double t )
+    {
+        return Vector2d.subtract( ship.s, Vector2d.multiply(ship.d, t) );
+    }
+
     void followTail( SimpleBattle gstate, double width, double weight )
     {
         NeuroShip enemy = getEnemyShip(gstate);
-        Vector2d va = Vector2d.subtract( enemy.s, Vector2d.multiply(enemy.d, 20.0) );
-        Vector2d vb = Vector2d.subtract(va, Vector2d.multiply(enemy.d, 200.0) );
+        Vector2d va = getPointBehindShip(enemy, 20.0);//Vector2d.subtract( enemy.s, Vector2d.multiply(enemy.d, 20.0) );
+        Vector2d vb = getPointBehindShip(enemy, 200.0); //Vector2d.subtract(va, Vector2d.multiply(enemy.d, 200.0) );
         ff.segmentAttractionFollow( va, vb, width, weight );
     }
 
@@ -158,13 +170,17 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         NeuroShip enemy = getEnemyShip(gstate);
         NeuroShip ship = gstate.getShip(myPlayerId);
 
+        Vector2d followPoint1 = getPointBehindShip(enemy, 30);
+        Vector2d followPoint2 = getPointBehindShip(enemy, 130);
+        Vector2d followPos = Util.closestPointOnSegment(shipPos, followPoint1, followPoint2);
+
         ff.clear();
-        ff.pointAttraction(enemyPos, 5.0, 0.1);
+        ff.pointAttraction(followPos, 5.0, 0.3); // was enemyPos
         avoidBullets(gstate,10.0, 0.4);
-        ff.radialRepulsion(enemyPos, 90, 0.2);
-        followTail(gstate, 30.0, 1.8);
-        avoidTrail(gstate, enemy, 30, 0.4);
-        avoidAsteroids(gstate, 0.6);
+        ff.radialRepulsion(enemyPos, 40, 0.1);
+        //followTail(gstate, 30.0, 1.8);
+        avoidTrail(gstate, enemy, 30, 1.5);
+        avoidAsteroids(gstate, 0.9);
         Vector2d rt = ff.headingAndForceAt(shipPos);
 
         return new Vector2d(rt.x,rt.y*0.1);
@@ -236,15 +252,10 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
     public void render( Graphics2D g, NeuroShip s ) {
         if(!debugDraw)
             return;
-        
+
         AffineTransform at = g.getTransform();
 
         ff.draw(g, size.width, size.height, 50);
-
-        for( Vector2d v : foo )
-        {
-            Gfx.drawCircle(g, v, 14);
-        }
     }
 
 }

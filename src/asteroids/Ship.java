@@ -109,7 +109,7 @@ public class Ship extends GameObject {
     private void tryMissileLaunch() {
         // System.out.println("Trying a missile launch");
         if (releaseVelocity > maxRelease) {
-            releaseVelocity = Math.max(releaseVelocity, missileMinVelocity * 2);
+           /* releaseVelocity = Math.max(releaseVelocity, missileMinVelocity * 2);
             Missile m = new Missile(s, new Vector2d(0, 0, true));
             releaseVelocity = Math.min(releaseVelocity, maxRelease);
             m.v.add(d, releaseVelocity);
@@ -118,7 +118,7 @@ public class Ship extends GameObject {
             releaseVelocity = 0;
             game.add(m);
             // System.out.println("Fired: " + m);
-            // sounds.fire();
+            // sounds.fire();*/
         } else {
             // System.out.println("Failed!");
         }

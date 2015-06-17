@@ -7,6 +7,7 @@ import asteroids.Action;
 import battle.controllers.EmptyController;
 import battle.controllers.FireController;
 import battle.controllers.Human.WASDController;
+import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
 import battle.controllers.Dani.DaniController;
 import battle.controllers.Dani.DaniControllerEvo;
@@ -27,13 +28,18 @@ public class DaniBattleTest {
 
         SimpleBattle battle = new SimpleBattle();
 
-        BattleController fire1 = new ForceControllerTest();
-        //BattleController fire2 = new MemoControllerRandom();
-        //BattleController fire2 = new MMMCTS();
-        //BattleController fire2 = new WASDController();
-        BattleController fire2 = new MemoController1();
+        for( int i = 0; i < 10; i++ )
+        {
+            BattleController fire1 = new ForceControllerTest();
+            //BattleController fire2 = new MemoControllerRandom();
+            //BattleController fire2 = new MMMCTS();
+            //BattleController fire1 = new WASDController();
+            BattleController fire2 = new ForceControllerTest();
 
-        battle.playGame(fire1, fire2, new Datalyzer());
+            battle.playGame(fire1, fire2, new Datalyzer("Game_"+i));
+        }
+
+
     }
 
 }
