@@ -49,7 +49,8 @@ public class GameRunner {
 //        controllers.add(new DaniController());
             controllers.add(new MemoControllerRandom());
             controllers.add(new MemoController1());
-//            controllers.add(new RotateAndShoot());
+            controllers.add(new RotateAndShoot());
+
 //            controllers.add(new PiersMCTS());
 
             GameRunner runner = new GameRunner(Integer.parseInt(args[0]), controllers, Integer.parseInt(args[1]));

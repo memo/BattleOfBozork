@@ -6,6 +6,7 @@ import analytics.Datalyzer;
 import asteroids.Action;
 import battle.controllers.EmptyController;
 import battle.controllers.FireController;
+import battle.controllers.Human.ArrowsController;
 import battle.controllers.Human.WASDController;
 import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;

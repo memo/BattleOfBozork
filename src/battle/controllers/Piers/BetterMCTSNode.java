@@ -13,7 +13,6 @@ public class BetterMCTSNode {
     private Action[] allActions;
     private Random random = new Random();
     private Action ourMoveToThisState;
-
     private BetterMCTSNode parent;
     private BetterMCTSNode[] children;
     private int numberOfChildrenExpanded;

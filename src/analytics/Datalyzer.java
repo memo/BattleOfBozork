@@ -5,6 +5,7 @@ import battle.NeuroShip;
 import battle.SimpleBattle;
 import math.Vector2d;
 import math.Util;
+import utilities.DoubleWithRange;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -85,13 +86,13 @@ public class Datalyzer {
                 for( int j = 0; j < n; j++ )
                 {
                     PlayerFrame pf = playerFrames[i].get(j);
-                    String line =   j + ", " + // frame
-                                    pf.pos.x + ", " +
-                                    pf.pos.y + ", " +
-                                    pf.thrust + ", " +
-                                    pf.turn + ", " +
-                                    pf.shooting + ", " +
-                                    pf.numBullets + ", " +
+                    String line =   j + "," + // frame
+                                    pf.pos.x + "," +
+                                    pf.pos.y + "," +
+                                    pf.thrust + "," +
+                                    pf.turn + "," +
+                                    pf.shooting + " " +
+                                    pf.numBullets + "," +
                                     pf.score +
                                     "\n";
                     frameFile.print(line);
@@ -99,6 +100,24 @@ public class Datalyzer {
                 frameFile.flush();
                 frameFile.close();
             }
+
+            // Save params
+            PrintWriter paramsFile = new PrintWriter( path + name + "_params.csv", "UTF-8");
+/*
+            ArrayList<double> params = new ArrayList<double>();
+            ArrayList<String> labels = new ArrayList<String>();
+            gameState.params.getData(labels, params);
+
+            paramsFile.print("name, value\n");
+            for( int i = 0; i < labels.size(); i++ )
+                paramsFile.print(labels.get(i) + "," + params.get(i) + "\n");
+*/
+            paramsFile.print("name, value\n");
+            for(DoubleWithRange v : gameState.params.param_map.values())
+                paramsFile.print(v.toString() + "\n");
+
+            paramsFile.flush();
+            paramsFile.close();
         }
         catch (IOException e)
         {
