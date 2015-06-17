@@ -39,7 +39,7 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
     double thrustAmt = 1.5;
     double rotAmt = 1.5;
     int shotWait = 0;
-    int shotDelay = 1;
+    int shotDelay = 5;
 
     boolean anyMissiles = false;
 
@@ -73,17 +73,6 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
             l < viewRadius)
             return true;
         return false;
-//
-//        Vector2d tp = new Vector2d();
-//
-//        Vector2d d = new Vector2d(ship.d, true);
-//        d.normalise();;
-//        tp.x = thisPos.x + d.x * l;
-//        tp.y = thisPos.y + d.y * l;
-//
-//        if( tp.dist(enemyPos) <= viewRadius)
-//            return true;
-//        return false;
     }
 
     ArrayList<Missile> getMissiles(SimpleBattle gstate)
@@ -175,11 +164,11 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
         Vector2d followPos = Util.closestPointOnSegment(shipPos, followPoint1, followPoint2);
 
         ff.clear();
-        ff.pointAttraction(followPos, 5.0, 0.3); // was enemyPos
+        ff.pointAttraction(followPos, 3.0, 1.0); // was enemyPos
         avoidBullets(gstate,10.0, 0.4);
         ff.radialRepulsion(enemyPos, 40, 0.1);
         //followTail(gstate, 30.0, 1.8);
-        avoidTrail(gstate, enemy, 30, 1.5);
+        avoidTrail(gstate, enemy, 30, 2.5);
         avoidAsteroids(gstate, 0.9);
         Vector2d rt = ff.headingAndForceAt(shipPos);
 
@@ -239,7 +228,6 @@ public class ForceControllerTest implements RenderableBattleController, KeyListe
                 else
                     debugDraw = true;
                 break;
-
         }
     }
 
