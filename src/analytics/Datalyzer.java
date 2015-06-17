@@ -84,13 +84,13 @@ public class Datalyzer {
                 for( int j = 0; j < n; j++ )
                 {
                     PlayerFrame pf = playerFrames[i].get(j);
-                    String line =   j + ", " + // frame
-                                    pf.pos.x + ", " +
-                                    pf.pos.y + ", " +
-                                    pf.thrust + ", " +
-                                    pf.turn + ", " +
-                                    pf.shooting + ", " +
-                                    pf.numBullets + ", " +
+                    String line =   j + "," + // frame
+                                    pf.pos.x + "," +
+                                    pf.pos.y + "," +
+                                    pf.thrust + "," +
+                                    pf.turn + "," +
+                                    pf.shooting + " " +
+                                    pf.numBullets + "," +
                                     pf.score +
                                     "\n";
                     frameFile.print(line);
@@ -98,6 +98,11 @@ public class Datalyzer {
                 frameFile.flush();
                 frameFile.close();
             }
+
+            // Save params
+            PrintWriter frameFile = new PrintWriter( path + name + "_params.csv", "UTF-8");
+
+            //gameState.
         }
         catch (IOException e)
         {
