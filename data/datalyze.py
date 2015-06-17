@@ -9,13 +9,14 @@ import pandas as pd
 from pandas import DataFrame, Series
 
 # Tmp, need to find best location for file
-os.chdir('/Users/colormotor/Dropbox/BattleAndBozork_Data/FirstSet')
+os.chdir('/Users/colormotor/data/cleaned')
+files = files_in_directory('/Users/colormotor/data/cleaned')
+
 
 width = 1280.0
 height = 800.0
 
 
-files = files_in_directory('/Users/colormotor/Dropbox/BattleAndBozork_Data/FirstSet')
 
 
 dani_controller_files = get_files_with_keys(files, ["p1DaniController","player0"])
@@ -128,7 +129,8 @@ print m_piers
 ##########################################
 # THE JUICE IS HERE
 # find all identifiers for files in folder
-files = files_in_directory('/Users/colormotor/Dropbox/BattleAndBozork_Data/FirstSet')
+os.chdir('/Users/colormotor/data/cleaned')
+files = files_in_directory('/Users/colormotor/data/cleaned')
 ids = get_all_identifiers(files)
 # now for each identifier find the mean measures
 print ids
@@ -199,7 +201,27 @@ df_sorted.head()
 
 
 print df_sorted['key'][0]
+labels = np.array(df_sorted['key'])
+scores = np.array(df_sorted['cost'])
 
+
+print "Best (highest score)"
+print labels[-1], scores[-1]
+
+print "Worse (lowert score)"
+print labels[0], scores[0]
+
+n = len(labels)
+print "Median (middle score)"
+print labels[n/2], scores[n/2]
+
+             
+# print labels and scores and data sorted 
+print "label,score"
+for label, score in zip(labels, scores):
+    print str(label) + "," + str(score)
+    
+df_sorted.head()
 print df['acc_var']
 
 ##########################################
@@ -255,7 +277,7 @@ print "Player1:"
 print get_measures(db1)
 print "Player2:"
 print get_measures(db2)
-             
+
 ###############################################
 ## Plotting
              
