@@ -29,19 +29,19 @@ public class ParameterManager {
 
     // randomize all parameters
     public void randomize() {
-        System.out.println("ParameterManager::randomize");
+//        System.out.println("ParameterManager::randomize");
         for (DoubleWithRange param : param_map.values()) {
             param.randomize();
-            System.out.println(param.toString());
+//            System.out.println(param.toString());
         }
     }
 
     // reset all parameters to default
     public void reset() {
-        System.out.println("ParameterManager::reset");
+//        System.out.println("ParameterManager::reset");
         for (DoubleWithRange param : param_map.values()) {
             param.reset();
-            System.out.println(param.toString());
+//            System.out.println(param.toString());
         }
     }
 

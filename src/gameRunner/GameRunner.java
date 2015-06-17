@@ -4,6 +4,8 @@ import analytics.Datalyzer;
 import battle.BattleController;
 import battle.SimpleBattle;
 import battle.controllers.Memo.MemoController1;
+import battle.controllers.Piers.BetterMCTSNode;
+import battle.controllers.Piers.PiersMCTS;
 import battle.controllers.RotateAndShoot;
 
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import java.util.concurrent.Executors;
 
 /**
  * Class for running multiple games and logging the results
- * <p>
+ * <p/>
  * Created by pwillic on 16/06/2015.
  */
 public class GameRunner {
@@ -45,7 +47,7 @@ public class GameRunner {
 //        controllers.add(new DaniController());
             controllers.add(new MemoController1());
             controllers.add(new RotateAndShoot());
-//        controllers.add(new PiersMCTS());
+//            controllers.add(new PiersMCTS());
 
             GameRunner runner = new GameRunner(Integer.parseInt(args[0]), controllers, Integer.parseInt(args[1]));
             runner.prefix = args[2];
@@ -54,6 +56,7 @@ public class GameRunner {
     }
 
     public void runTheGames() {
+//        BetterMCTSNode.setAllActions();
         SimpleBattle battle = new SimpleBattle(false);
         battle.DO_FLUID = false;
         battle.reset();
@@ -62,7 +65,8 @@ public class GameRunner {
             for (BattleController p2 : controllers) {
                 if (p1 != p2) {
                     for (int i = 0; i < gamesPerMatchup; i++) {
-                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, prefix + p1.getClass().getSimpleName() + "-" + p2.getClass().getSimpleName() + "-" + i));
+                        String name = prefix + p1.getClass().getSimpleName() + "-" + p2.getClass().getSimpleName() + "-" + i;
+                        runnerThreads.add(new GameRunnerWrapper(battle.clone(), p1, p2, name));
                     }
                 }
             }
@@ -96,9 +100,10 @@ class GameRunnerWrapper implements Callable<Object> {
     @Override
     public Object call() throws Exception {
         try {
-            game.playGame(p1, p2, new Datalyzer(name));
+            game.playGame(p1, p2, new Datalyzer(name), true);
         } catch (Exception e) {
             e.printStackTrace();
+//            System.err.println("Fucked up: " + name);
         }
         System.out.println("Finished: " + name);
         return null;
