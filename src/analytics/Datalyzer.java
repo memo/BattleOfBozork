@@ -5,6 +5,7 @@ import battle.NeuroShip;
 import battle.SimpleBattle;
 import math.Vector2d;
 import math.Util;
+import utilities.DoubleWithRange;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -101,9 +102,22 @@ public class Datalyzer {
             }
 
             // Save params
-            PrintWriter frameFile = new PrintWriter( path + name + "_params.csv", "UTF-8");
+            PrintWriter paramsFile = new PrintWriter( path + name + "_params.csv", "UTF-8");
+/*
+            ArrayList<double> params = new ArrayList<double>();
+            ArrayList<String> labels = new ArrayList<String>();
+            gameState.params.getData(labels, params);
 
-            //gameState.
+            paramsFile.print("name, value\n");
+            for( int i = 0; i < labels.size(); i++ )
+                paramsFile.print(labels.get(i) + "," + params.get(i) + "\n");
+*/
+            paramsFile.print("name, value\n");
+            for(DoubleWithRange v : gameState.params.param_map.values())
+                paramsFile.print(v.toString() + "\n");
+
+            paramsFile.flush();
+            paramsFile.close();
         }
         catch (IOException e)
         {
