@@ -14,14 +14,14 @@ public class PiersMCTS implements BattleController {
     protected static final int ACTIONS_PER_MACRO_ENEMY_CLOSE = 3;
     protected static final int ACTIONS_PER_MACRO_ENEMY_FAR = 10;
     protected static final double DISTANCE_THRESHOLD = 100;
-    protected static int ACTIONS_PER_MACRO = 10;
+    protected int ACTIONS_PER_MACRO = 10;
     int rolloutsPerMacroAction = 0;
     private MacroAction currentBestAction = new MacroAction(new Action(1, 0, false));
     private BetterMCTSNode root;
 
     public PiersMCTS() {
-        MCTSNode.setAllActions();
-        BetterMCTSNode.setAllActions();
+//        MCTSNode.setAllActions();
+//        BetterMCTSNode.setAllActions();
     }
 
     @Override
@@ -42,15 +42,19 @@ public class PiersMCTS implements BattleController {
         }
         ACTIONS_PER_MACRO = (shortestDistance > DISTANCE_THRESHOLD) ? ACTIONS_PER_MACRO_ENEMY_FAR : ACTIONS_PER_MACRO_ENEMY_CLOSE;
 
-        if (root == null) root = new BetterMCTSNode(2.0, playerId);
-        if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) root = new BetterMCTSNode(2.0, playerId);
+        if (root == null) root = new BetterMCTSNode(2.0, playerId, this);
+        if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) root = new BetterMCTSNode(2.0, playerId, this);
 
         int i = 0;
         while (timer.remainingTimePercent() > 10) {
+//            if(root == null) continue;
             SimpleBattle copy = gameStateCopy.clone();
+//            System.out.println(root);
             BetterMCTSNode travel = root.select(copy, 3);
-            double result = travel.rollout(copy, 5);
-            travel.updateValues(result);
+            if(travel != null) {
+                double result = travel.rollout(copy, 5);
+                travel.updateValues(result);
+            }
             i++;
         }
         rolloutsPerMacroAction += i;
@@ -59,7 +63,6 @@ public class PiersMCTS implements BattleController {
 
         if (currentBestAction.getTimesUsed() >= ACTIONS_PER_MACRO) {
             currentBestAction = new MacroAction(root.getBestAction());
-            root = null;
 //            System.out.println("Rollouts Achieved this macro action: " + rolloutsPerMacroAction);
             rolloutsPerMacroAction = 0;
         }

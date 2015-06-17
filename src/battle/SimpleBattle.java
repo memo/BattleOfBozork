@@ -101,6 +101,7 @@ public class SimpleBattle {
         } else {
             DO_FLUID = false;
         }
+        initParams();
     }
 
     public int getTicks() {
@@ -161,11 +162,11 @@ public class SimpleBattle {
             view.requestFocus();
         }
 
-        System.out.println("Start game...");
+//        System.out.println("Start game...");
         while (!isGameOver()) {
             update(datalyzer);
         }
-        System.out.println("Game over.");
+//        System.out.println("Game over.");
 
         if (p1 instanceof KeyListener) {
             view.removeKeyListener((KeyListener) p1);

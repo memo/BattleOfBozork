@@ -10,8 +10,8 @@ import java.util.Random;
  */
 public class BetterMCTSNode {
     private static final double EPSILON = 1e-6;
-    private static Action[] allActions;
-    private static Random random = new Random();
+    private Action[] allActions;
+    private Random random = new Random();
     private Action ourMoveToThisState;
 
     private BetterMCTSNode parent;
@@ -26,16 +26,20 @@ public class BetterMCTSNode {
     private int numberOfVisits = 1;
 
     private double explorationConstant;
+    private PiersMCTS mcts;
 
-    public BetterMCTSNode(double explorationConstant, int playerID) {
+    public BetterMCTSNode(double explorationConstant, int playerID, PiersMCTS mcts) {
+        setAllActions();
         this.explorationConstant = explorationConstant;
         currentDepth = 0;
         this.playerID = playerID;
         ourNode = true;
         children = new BetterMCTSNode[allActions.length];
+        this.mcts = mcts;
     }
 
     private BetterMCTSNode(BetterMCTSNode parent, Action ourMoveToThisState) {
+        setAllActions();
         this.explorationConstant = parent.explorationConstant;
         this.ourMoveToThisState = ourMoveToThisState;
         this.parent = parent;
@@ -43,18 +47,22 @@ public class BetterMCTSNode {
         this.currentDepth = parent.currentDepth + 1;
         this.playerID = parent.playerID;
         this.ourNode = parent.ourNode;
+        this.mcts = parent.mcts;
     }
 
-    public static void setAllActions() {
-        allActions = new Action[6];
+    public void setAllActions() {
+        if (allActions == null) {
+            allActions = new Action[6];
 //        notShootActions = new Action[6];
-        int i = 0;
-        int j = 0;
-        for (double thrust = 1; thrust <= 1; thrust += 1) {
-            for (double turn = -1; turn <= 1; turn += 1) {
-                allActions[i++] = new Action(thrust, turn, true);
-                allActions[i++] = new Action(thrust, turn, false);
+            int i = 0;
+            int j = 0;
+            for (double thrust = 1; thrust <= 1; thrust += 1) {
+                for (double turn = -1; turn <= 1; turn += 1) {
+                    allActions[i++] = new Action(thrust, turn, true);
+                    allActions[i++] = new Action(thrust, turn, false);
+                }
             }
+            if (i != 6) System.err.println("i: " + i);
         }
     }
 
@@ -63,7 +71,7 @@ public class BetterMCTSNode {
         while (current.currentDepth <= maxDepth) {
             if (current.fullyExpanded()) {
                 current = current.selectBestChild();
-                for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+                for (int i = 0; i < mcts.ACTIONS_PER_MACRO; i++) {
                     state.update(current.ourMoveToThisState, allActions[random.nextInt(allActions.length)]);
                 }
             } else {
@@ -85,7 +93,7 @@ public class BetterMCTSNode {
             childToExpand = random.nextInt(allActions.length);
         }
         children[childToExpand] = new BetterMCTSNode(this, allActions[childToExpand]);
-        for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+        for (int i = 0; i < mcts.ACTIONS_PER_MACRO; i++) {
             state.update(allActions[childToExpand], allActions[random.nextInt(allActions.length)]);
         }
         numberOfChildrenExpanded++;
@@ -131,7 +139,7 @@ public class BetterMCTSNode {
         while (maxDepth > currentRolloutDepth && !state.isGameOver()) {
             Action first = allActions[random.nextInt(allActions.length)];
             Action second = allActions[random.nextInt(allActions.length)];
-            for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+            for (int i = 0; i < mcts.ACTIONS_PER_MACRO; i++) {
                 state.update(first, second);
             }
             currentRolloutDepth++;
