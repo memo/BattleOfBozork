@@ -68,12 +68,13 @@ public class GameRunner {
             }
         }
         System.out.println("Starting the games");
+        long startTime = System.currentTimeMillis();
         try {
             threadPool.invokeAll(runnerThreads);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        System.out.println("Calculation time: " + (System.currentTimeMillis() - startTime));
         threadPool.shutdown();
     }
 

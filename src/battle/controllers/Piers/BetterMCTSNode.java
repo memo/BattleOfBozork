@@ -26,13 +26,15 @@ public class BetterMCTSNode {
     private int numberOfVisits = 1;
 
     private double explorationConstant;
+    private PiersMCTS mcts;
 
-    public BetterMCTSNode(double explorationConstant, int playerID) {
+    public BetterMCTSNode(double explorationConstant, int playerID, PiersMCTS mcts) {
         this.explorationConstant = explorationConstant;
         currentDepth = 0;
         this.playerID = playerID;
         ourNode = true;
         children = new BetterMCTSNode[allActions.length];
+        this.mcts = mcts;
     }
 
     private BetterMCTSNode(BetterMCTSNode parent, Action ourMoveToThisState) {
@@ -43,6 +45,7 @@ public class BetterMCTSNode {
         this.currentDepth = parent.currentDepth + 1;
         this.playerID = parent.playerID;
         this.ourNode = parent.ourNode;
+        this.mcts = parent.mcts;
     }
 
     public static void setAllActions() {
@@ -63,7 +66,7 @@ public class BetterMCTSNode {
         while (current.currentDepth <= maxDepth) {
             if (current.fullyExpanded()) {
                 current = current.selectBestChild();
-                for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+                for (int i = 0; i < mcts.ACTIONS_PER_MACRO; i++) {
                     state.update(current.ourMoveToThisState, allActions[random.nextInt(allActions.length)]);
                 }
             } else {
@@ -85,7 +88,7 @@ public class BetterMCTSNode {
             childToExpand = random.nextInt(allActions.length);
         }
         children[childToExpand] = new BetterMCTSNode(this, allActions[childToExpand]);
-        for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+        for (int i = 0; i < mcts.ACTIONS_PER_MACRO; i++) {
             state.update(allActions[childToExpand], allActions[random.nextInt(allActions.length)]);
         }
         numberOfChildrenExpanded++;
@@ -131,7 +134,7 @@ public class BetterMCTSNode {
         while (maxDepth > currentRolloutDepth && !state.isGameOver()) {
             Action first = allActions[random.nextInt(allActions.length)];
             Action second = allActions[random.nextInt(allActions.length)];
-            for (int i = 0; i < PiersMCTS.ACTIONS_PER_MACRO; i++) {
+            for (int i = 0; i < mcts.ACTIONS_PER_MACRO; i++) {
                 state.update(first, second);
             }
             currentRolloutDepth++;

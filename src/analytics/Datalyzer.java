@@ -79,6 +79,7 @@ public class Datalyzer {
 
                 frameFile.print(getCsvLabels());
 
+
                 int n = playerFrames[i].size();
 
                 for( int j = 0; j < n; j++ )
