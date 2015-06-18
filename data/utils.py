@@ -6,6 +6,8 @@ import re
 import os
 from os.path import isfile, join
 
+vec = np.array
+
 ID_RE = "^[a-zA-Z0-9]+_[0-9]+_pSet[0-9]+"
 # player 1 and 2 
 P1_RE = "p1[a-zA-Z0-9]+"
@@ -27,23 +29,38 @@ def files_in_directory(path):
     ''' Returns a list of files in a directory'''
     return [ f for f in os.listdir(path) if isfile(join(path,f)) ]
     
-def find_strings(S, txt, exception=None):
+        
+def find_all(S, txt):
+    if not S:
+        return False
     ''' Returns true if all strings in the 
         list S are found in txt'''
     for s in S:
         if txt.find(s) < 0:
             return False
-        if exception!=None and txt.find(exception) > -1:
-            return False
     return True
     
-def get_files_with_keys(files, keys, exception=None):
+def find_one_of(S, txt):
+    if not S:
+        return False
+    ''' Returns true if all strings in the 
+        list S are found in txt'''
+    for s in S:
+        if txt.find(s) > -1:
+            return True
+    return False
+    
+def get_files_with_keys(files, keys, exceptions=None):
     ''' Gives a list of all files that have all keys in their name
     '''
     # make sure it is a list
     if type(keys) != list:
         keys = [keys]
-    return [ f for f in files if find_strings(keys, f, exception) ]
+    if exceptions and type(exceptions) != list:
+        exceptions = [exceptions]
+        
+    return [ f for f in files if (find_all(keys, f) and not find_one_of(exceptions, f)) ]
+
 
 def get_all_identifiers(files):
     IDs = []
