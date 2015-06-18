@@ -12,7 +12,7 @@ import battle.controllers.Human.WASDController;
 /**
  * Created by simon lucas on 10/06/15.
  */
-public class MemoBattleTest {
+public class BozorkPlayerB {
     BattleView view;
 
     public static void main(String[] args) {
@@ -21,7 +21,7 @@ public class MemoBattleTest {
         SimpleBattle.game_version = "B";
         BattleController player1 = new ArrowsController();
         BattleController player2 = new ForceControllerTest();
-        battle.playGame(player1, player2, new Datalyzer() );
+        battle.playGame(player1, player2 );
     }
 
 }

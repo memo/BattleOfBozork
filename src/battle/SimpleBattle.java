@@ -2,6 +2,7 @@ package battle;
 
 import analytics.Datalyzer;
 import asteroids.*;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import math.Vector2d;
 import msafluid.MSAFluidSolver2D;
 import utilities.JEasyFrame;
@@ -51,8 +52,10 @@ public class SimpleBattle {
 
     static int startHealth = 100;
     static int releaseVelocity = 5;
-    public boolean DO_FLUID = true;
+    public boolean DO_FLUID = false;
     boolean visible = true;
+
+    static String game_version; // 'A' or 'B'
 
     ArrayList<BattleController> controllers;
 
@@ -69,13 +72,51 @@ public class SimpleBattle {
 
     public ParameterManager params = new ParameterManager();
 
+    // BOTTOM
+    public void initParams_CSEELAB325_1_pSet10() {
+        // CSEELAB325_1_pSet10	0.092490636	19.60735154	409.9276459	0.944927797	72.91732605	0.998437061
+        params.add("num_asteroids", 19.6073515381, 5, 50);
+        params.add("trail_length", 409.927645949, 0, NeuroShip.trail_length_max);
+        params.add("ship_momentum", 0.942035504079, 0.9, 1.0);
+        params.add("missile_ttl", 72.917326049, 30, 200);
+        params.add("trail_momentum", 0.998437061085, 0.9, 1.0);
+    }
+
+    // B
+    public void initParams_CSEELAB309_3_pSet8() {
+        // CSEELAB309_3_pSet8	0.503910956	15.18624906	379.190292	0.901597983	72.39060229	0.99683353
+        params.add("num_asteroids", 15.18624906, 5, 50);
+        params.add("trail_length", 379.190292, 0, NeuroShip.trail_length_max);
+        params.add("ship_momentum", 0.901597983, 0.9, 1.0);
+        params.add("missile_ttl", 72.39060229, 30, 200);
+        params.add("trail_momentum", 0.99683353, 0.9, 1.0);
+    }
+
+    // A
+    public void initParams_CSEELAB309_3_pSet7() {
+        // CSEELAB309_3_pSet7	1.911399711	9.555640032	158.9970322	0.984584047	34.97596535	0.914464183
+        params.add("num_asteroids", 9.555640032, 5, 50);
+        params.add("trail_length", 158.9970322, 0, NeuroShip.trail_length_max);
+        params.add("ship_momentum", 0.984584047, 0.9, 1.0);
+        params.add("missile_ttl", 34.97596535, 30, 200);
+        params.add("trail_momentum", 0.914464183, 0.9, 1.0);
+    }
+
+    // TOP
+    public void initParams_CSEELAB309_1_pSet8() {
+        // CSEELAB309_1_pSet8	1.990103532	31.63134127	10.00574501	0.994911656	45.00712237	0.939288803
+        params.add("num_asteroids", 31.6313412692, 5, 50);
+        params.add("trail_length", 10.0057450123, 0, NeuroShip.trail_length_max);
+        params.add("ship_momentum", 0.994911655827, 0.9, 1.0);
+        params.add("missile_ttl", 45.0071223742, 30, 200);
+        params.add("trail_momentum", 0.93928880319, 0.9, 1.0);
+    }
 
     public void initParams() {
-        params.add("trail_length", 200, 0, NeuroShip.trail_length_max);
-        params.add("trail_momentum", 0.985, 0.9, 1.0);
-        params.add("ship_momentum", 0.997, 0.9, 1.0);
-        params.add("num_asteroids", 10, 5, 50);
-        params.add("missile_ttl", 60, 30, 200);
+        if(game_version == "B")
+             initParams_CSEELAB309_3_pSet8();
+        else
+            initParams_CSEELAB309_3_pSet7();
     }
 
     public void randomizeParams() {
@@ -184,8 +225,8 @@ public class SimpleBattle {
     public void reset() {
         stats.clear();
         objects.clear();
-        s1 = buildShip(100, 250, 0);
-        s2 = buildShip(500, 250, 1);
+        s1 = buildShip(Constants.width/4 , Constants.height/2, 0);
+        s2 = buildShip(Constants.width * 3/4, Constants.height/2, 1);
         this.currentTick = 0;
 
         stats.add(new PlayerStats(0, startHealth));

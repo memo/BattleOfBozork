@@ -45,7 +45,7 @@ public class ArrowsController implements BattleController, KeyListener {
                 currentAction.turn = 1;
                 break;
 
-            case KeyEvent.VK_ALT:
+            case KeyEvent.VK_SPACE:
                 currentAction.shoot = true;
                 break;
         }
@@ -66,7 +66,7 @@ public class ArrowsController implements BattleController, KeyListener {
                 currentAction.turn = 0;
                 break;
 
-            case KeyEvent.VK_ALT:
+            case KeyEvent.VK_SPACE:
                 currentAction.shoot = false;
                 break;
         }

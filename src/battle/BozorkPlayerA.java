@@ -12,16 +12,16 @@ import battle.controllers.Human.WASDController;
 /**
  * Created by simon lucas on 10/06/15.
  */
-public class MemoBattleTest {
+public class BozorkPlayerA {
     BattleView view;
 
     public static void main(String[] args) {
 
         SimpleBattle battle = new SimpleBattle();
-        SimpleBattle.game_version = "B";
+        SimpleBattle.game_version = "A";
         BattleController player1 = new ArrowsController();
         BattleController player2 = new ForceControllerTest();
-        battle.playGame(player1, player2, new Datalyzer() );
+        battle.playGame(player1, player2 );
     }
 
 }
