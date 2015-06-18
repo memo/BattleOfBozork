@@ -64,13 +64,14 @@ def scatter_3dscalar(X, Y, Z, S, xlab, ylab, zlab,saving=False):
     ax.set_zlabel(zlab)
     
     if saving:
+        f = plt.gcf()
         fname = "plots/" + xlab + "_" + ylab + "_" + zlab + ".png"
         print "Saving file " + fname
-        plt.savefig(fname, dpi=72)
-    else:
-        plt.show()
+        f.savefig(fname, dpi=90)
+
+    plt.show()
     
-def scatter_2dscalar(X,Y,S,xlab,ylab,saving=False, regression=True):    
+def scatter_2dscalar(X,Y,S,xlab,ylab,saving=False, regression=False):    
     ''' Visualize a 2d scalar field wherer X,Y are the coordinates
         and S is the scalar value'''
     C = S/2
@@ -85,20 +86,23 @@ def scatter_2dscalar(X,Y,S,xlab,ylab,saving=False, regression=True):
     plt.ylabel(ylab)
 
     if saving:
+        f = plt.gcf()
         fname = "plots/" + xlab + "_" + ylab + ".png"
         print "Saving file " + fname
-        plt.savefig(fname, dpi=72)
-    else:
-        plt.show()
+        f.savefig(fname, dpi=150)
 
-        
+    plt.show()
+
+# creates 2d scatter plots for all combinations of 2 parameters        
 for c in combinations(I, 2):
     X = V[c[0]]
     Y = V[c[1]]
     xlab = labels[c[0]]
     ylab = labels[c[1]]
-    scatter_2dscalar(X, Y, scores, xlab=xlab, ylab=ylab, saving=False)
-
+    scatter_2dscalar(X, Y, scores, xlab=xlab, ylab=ylab, saving=True)
+    
+    
+# creates 3d scatter plots for all combinations of 3 parameters
 for c in combinations(I, 3):
     X = V[c[0]]
     Y = V[c[1]]
@@ -153,7 +157,12 @@ print thresh_score
 pruned = rn[rn.score > thresh_score]
 pruned.describe()
 
-
+def do_leastsq(db):
+    Xp = vec([ vec(db[col]) for col in cols])
+    Y = vec(db['score'])
+    Xp = Xp.transpose()
+    return np.linalg.lstsq(Xp,Y)
+    
 def do_pca(db, n=2):
     
     Xp = vec([ vec(db[col]) for col in cols])
@@ -194,4 +203,6 @@ def do_pca(db, n=2):
 
 pca = do_pca(pruned, n=5)    
 
-np.lin
+print np.transpose(labels)
+
+m,c,rank,s = do_leastsq(pruned)
