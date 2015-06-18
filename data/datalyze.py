@@ -16,9 +16,6 @@ files = files_in_directory('/Users/colormotor/data/cleaned')
 width = 1280.0
 height = 800.0
 
-
-
-
 dani_controller_files = get_files_with_keys(files, ["p1DaniController","player0"])
 dani_controller_files += get_files_with_keys(files, ["p2DaniController","player1"])
 
@@ -26,7 +23,6 @@ piers_controller_files = get_files_with_keys(files, ["p1PiersMCTS","player0"])
 piers_controller_files += get_files_with_keys(files, ["p2PiersMCTS","player1"])
 
 #db1, db2 = load_data(game_index=1)
-
 
 ###############################################
 ## Measure computation
@@ -150,7 +146,7 @@ for id in ids:
     print "Processing id " + str(i) + " of " + str(n)
     
     # Find all files (names) that have this identifier, and are not param files
-    F = get_files_with_keys(files, [id], 'params')    
+    F = get_files_with_keys(files, [id], ['params','Dani'])    
     # get measures for all files
     M = get_measures_for_files(F)    
     # get means for this id
@@ -217,9 +213,29 @@ print labels[n/2], scores[n/2]
 
              
 # print labels and scores and data sorted 
-print "label,score"
-for label, score in zip(labels, scores):
-    print str(label) + "," + str(score)
+
+labelstr = None
+
+for label, score in zip(labels, scores): 
+    f = get_files_with_keys(files, [label,"params"])[0]
+
+    pp = pd.read_csv(f)
+    names = pp['name']
+    values = pp[' value']
+    
+    if not labelstr:
+        labelstr = "label,score,"
+        for name in names:
+            labelstr += str(name) + ","
+        labelstr = labelstr[:-1]
+        print labelstr
+        
+    valstr = str(label) + "," + str(score) + ","
+    for v in values:
+        valstr += str(v) + ","
+    valstr = valstr[:-1]
+    
+    print valstr
     
 df_sorted.head()
 print df['acc_var']
@@ -277,6 +293,7 @@ print "Player1:"
 print get_measures(db1)
 print "Player2:"
 print get_measures(db2)
+
 
 ###############################################
 ## Plotting
