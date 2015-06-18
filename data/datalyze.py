@@ -12,15 +12,31 @@ from pandas import DataFrame, Series
 os.chdir('/Users/colormotor/data/cleaned')
 files = files_in_directory('/Users/colormotor/data/cleaned')
 
+def count_games_with_less_than(n):
+    F = get_files_with_keys(files, ['p1'], ['params','Dani']) 
+    
+    db = None
+    i = 0
+    c = 0
+    for f in F:
+        print f
+        db = pd.read_csv(f)
+        l = db['frame'].shape[0]
+        print l
+        if l < n:
+            i+=1
+    
+    return i/2
+
 
 width = 1280.0
 height = 800.0
 
-dani_controller_files = get_files_with_keys(files, ["p1DaniController","player0"])
-dani_controller_files += get_files_with_keys(files, ["p2DaniController","player1"])
+#dani_controller_files = get_files_with_keys(files, ["p1DaniController","player0"])
+#dani_controller_files += get_files_with_keys(files, ["p2DaniController","player1"])
 
-piers_controller_files = get_files_with_keys(files, ["p1PiersMCTS","player0"])
-piers_controller_files += get_files_with_keys(files, ["p2PiersMCTS","player1"])
+#piers_controller_files = get_files_with_keys(files, ["p1PiersMCTS","player0"])
+#piers_controller_files += get_files_with_keys(files, ["p2PiersMCTS","player1"])
 
 #db1, db2 = load_data(game_index=1)
 
