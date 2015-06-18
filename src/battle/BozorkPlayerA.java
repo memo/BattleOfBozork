@@ -21,7 +21,7 @@ public class BozorkPlayerA {
         SimpleBattle.game_version = "A";
         BattleController player1 = new ArrowsController();
         BattleController player2 = new ForceControllerTest();
-        battle.playGame(player1, player2, new Datalyzer() );
+        battle.playGame(player1, player2 );
     }
 
 }
