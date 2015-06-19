@@ -108,20 +108,19 @@ public class SimpleBattle {
     }
 
     public int playGame(BattleController p1, BattleController p2) {
-        return playGame(p1, p2, null, false);
+        return playGame(p1, p2, null, true);
     }
 
     public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer) {
-        return playGame(p1, p2, datalyzer, false);
+        return playGame(p1, p2, datalyzer, true);
     }
 
-    public int playGame(BattleController p1, BattleController p2, boolean randomize_params) {
-        return playGame(p1, p2, null, randomize_params);
+    public int playGame(BattleController p1, BattleController p2, boolean init_params) {
+        return playGame(p1, p2, null, init_params);
     }
 
-    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer, boolean randomize_params) {
-        initParams();
-        if(randomize_params) randomizeParams();
+    public int playGame(BattleController p1, BattleController p2, Datalyzer datalyzer, boolean init_params) {
+        if(init_params) initParams();
 
 
         if (DO_FLUID) {
